@@ -1,20 +1,22 @@
 {
-  "name": "kho-xang-dau",
-  "version": "1.0.0",
+  "name": "kho-xang-dau-anh-huy",
+  "version": "1.1.0",
   "private": true,
+  "description": "Ứng dụng quản lý tồn kho và bán lẻ xăng dầu Anh Huy",
   "scripts": {
     "prepare:www": "node scripts/prep.js",
     "sync": "npm run prepare:www && cap sync android",
+    "android:add": "cap add android",
     "apk": "npm run sync && cd android && gradlew assembleDebug"
   },
   "dependencies": {
-    "@capacitor/android": "^6.2.0",
-    "@capacitor/core": "^6.2.0",
-    "@capacitor/filesystem": "^6.0.0",
-    "@capacitor/share": "^6.0.0",
+    "@capacitor/android": "6.2.0",
+    "@capacitor/core": "6.2.0",
+    "@capacitor/filesystem": "6.0.2",
+    "@capacitor/share": "6.0.2",
     "xlsx": "0.18.5"
   },
   "devDependencies": {
-    "@capacitor/cli": "^6.2.0"
+    "@capacitor/cli": "6.2.0"
   }
 }

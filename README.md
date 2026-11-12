@@ -1,50 +1,52 @@
-# Tồn Kho Xăng Dầu Anh Huy: đóng gói thành APK Android
+# Tồn kho & bán lẻ xăng dầu Anh Huy
 
-Tên repository GitHub gợi ý: `ton-kho-xang-dau-anh-huy` (GitHub không cho dùng khoảng trắng và dấu tiếng Việt trong tên repo).
+Ứng dụng web offline-first được đóng gói thành APK Android bằng Capacitor 6.
 
-Dự án này gói ứng dụng web (thư mục `www/`) thành file APK bằng Capacitor.
-Dữ liệu lưu ngay trên điện thoại (bộ nhớ của ứng dụng), không cần máy chủ.
+## Build APK bằng GitHub Actions
 
-## Cách 1: Build miễn phí trên GitHub (không cần cài gì lên máy tính)
+- Mỗi lần push lên `main` hoặc nhánh `fix/**`, workflow **Build APK** tự chạy.
+- Có thể chạy thủ công trong tab **Actions → Build APK → Run workflow**.
+- Khi thành công, mở workflow run và tải artifact **anh-huy-kho-xang-dau-apk**. Bên trong là `app-debug.apk`.
+- APK debug dùng để cài nội bộ; không dùng để phát hành Google Play.
 
-1. Tạo tài khoản và một repository mới (private) trên github.com.
-2. Tải toàn bộ nội dung thư mục này lên repository (nút "Add file" → "Upload files").
-   Nhớ giữ nguyên thư mục `.github/workflows/`.
-3. Vào tab **Actions** → chọn **Build APK** → **Run workflow**. Chờ khoảng 5–10 phút.
-4. Mở lần chạy vừa xong → mục **Artifacts** → tải `kho-xang-dau-apk` (file zip chứa `app-debug.apk`).
+## Build local
 
-## Cách 2: Build trên máy tính
+Yêu cầu Node.js 20 và JDK 17.
 
-Cần: Node.js 18+ (hoặc 20), JDK 17, Android Studio (để có Android SDK).
-
-```
+```bash
 npm install
-npx cap add android      # chỉ chạy lần đầu
+npx cap add android
 npm run sync
 cd android
-gradlew assembleDebug    # macOS/Linux: ./gradlew assembleDebug
+./gradlew assembleDebug
 ```
-File APK nằm ở `android/app/build/outputs/apk/debug/app-debug.apk`.
-Hoặc chạy `npx cap open android` để mở bằng Android Studio và bấm Run.
 
-## Cài APK lên điện thoại
+APK: `android/app/build/outputs/apk/debug/app-debug.apk`.
 
-1. Chép file `app-debug.apk` sang điện thoại (Zalo, Drive, cáp USB...).
-2. Mở file, nếu máy hỏi thì cho phép "Cài đặt ứng dụng từ nguồn này".
-3. Mở ứng dụng "Tồn Kho Xăng Dầu Anh Huy".
+## Đồng bộ dữ liệu thời gian thực cho 2–3 thiết bị
 
-APK debug đã được ký sẵn bằng khoá debug nên cài được ngay cho nội bộ.
-Muốn đăng lên Google Play phải tạo bản release có khoá ký riêng.
+Ứng dụng luôn lưu dữ liệu local trong WebView để tiếp tục làm việc khi offline. Khi cấu hình Firebase và đăng nhập, thay đổi sẽ được gửi lên Firestore và các thiết bị khác đang online nhận bản cập nhật qua realtime listener.
 
-## Cập nhật ứng dụng
+1. Tạo Firebase project tại https://console.firebase.google.com/.
+2. Thêm ứng dụng Web trong Project settings và sao chép Firebase config JSON.
+3. Authentication → Sign-in method → bật **Email/Password**; tạo một tài khoản nội bộ dùng chung cho các điện thoại trong cửa hàng (chỉ chia sẻ với người được phép).
+4. Firestore Database → tạo database.
+5. Đưa nội dung file `firestore.rules` trong repo lên Firestore Rules rồi Publish.
+6. Trong app mở **Lịch sử → Dữ liệu: xuất Excel, sao lưu, đồng bộ**, dán Firebase Web config, nhập email/mật khẩu và bấm **Kết nối / đăng nhập** trên từng thiết bị.
 
-Thay `www/index.html` bằng bản mới rồi build lại (cách 1: tải file lên GitHub và chạy lại workflow).
-Cài đè lên bản cũ thì dữ liệu trên máy vẫn giữ nguyên, chỉ gỡ ứng dụng mới mất dữ liệu.
+**Lưu ý vận hành:** Đây là mô hình đồng bộ một bản dữ liệu dùng chung, phù hợp nhóm rất nhỏ 2–3 máy không nhập sửa đồng thời liên tục. Nếu hai máy sửa cùng lúc, bản ghi sau cùng có thể thay thế bản trước; tránh cùng chốt ca hoặc chỉnh tồn kho trên nhiều máy đồng thời. Dữ liệu local và Excel backup vẫn hoạt động khi offline. Không dùng tài khoản này cho người ngoài cửa hàng.
 
-## Lưu ý
+## Chức năng hiện có
 
-- Hãy xuất file Excel định kỳ để sao lưu. Trong APK, nút xuất Excel mở bảng chia sẻ để bạn lưu vào Drive/Zalo.
-- Khôi phục dữ liệu bằng chức năng chọn file Excel đã xuất ra.
-- Đồng bộ trực tuyến giữa các máy (kho dữ liệu của claude.ai) không có trong APK. Chuyển dữ liệu giữa các máy bằng Excel, hoặc nối Google Sheets sau.
-- Đổi tên ứng dụng và mã gói trong `capacitor.config.json` (`appName`, `appId`) nếu cần.
-- Đổi biểu tượng: đặt `assets/icon.png` (1024×1024) rồi chạy `npx @capacitor/assets generate --android` trước khi build.
+- Quản lý bồn, barem, đo tồn kho và cảnh báo tồn thấp.
+- Nhập hàng, giá vốn, đơn giá trụ và giao ca.
+- Thu/chi, chốt ca, lịch sử và thống kê.
+- Xuất/khôi phục Excel.
+- Firebase realtime sync (cần Firebase project riêng do chủ cửa hàng quản lý).
+
+## Cấu trúc
+
+- `www/index.html`: giao diện và nghiệp vụ.
+- `www/native.js`: cầu nối chia sẻ file Android và Firebase.
+- `.github/workflows/android-apk.yml`: pipeline build APK.
+- `capacitor.config.json`: cấu hình ứng dụng Android.

@@ -364,40 +364,54 @@ sh(`<h2>${k.split('-').reverse().join('/')}</h2><div class="li tot"><span>Tổng
 <div class="li"><span>${h.diff==null?'Dư / Thiếu':h.diff>=0?'Dư':'Thiếu'}</span><b class="${h.diff==null?'':lc(h.diff)}">${h.diff==null?'—':fmt(Math.abs(h.diff))+' đồng'}</b></div>
 <button class="lk" onclick="hsDel(${h.id})">Xoá ca này</button></div>`).join(''))}
 function hsDel(id){ask('Xoá ca này khỏi lịch sử?',()=>{S.hist=S.hist.filter(h=>h.id!=id);save();render()})}
-let DBC=null,DLC=window.nativeDL||null;
+let DLC=window.nativeDL||null;
 try{navigator.storage.persist().catch(()=>{})}catch(e){}
-if(window.claude){claude.use('db').then(d=>{DBC=d}).catch(()=>{});claude.use('downloads').then(d=>{DLC=d}).catch(()=>{})}
-function dataForm(){const off=DBC?'':' disabled style="opacity:.45"';
-sh(`<h2>Dữ liệu</h2><div class="mut">Dữ liệu được lưu ngay trên máy này. Hãy xuất Excel định kỳ để sao lưu.</div>
-<button class="btn" onclick="xlExport()">Xuất file Excel</button>
-<label>Khôi phục từ file Excel do app xuất ra (thay thế toàn bộ dữ liệu trên máy)<input id="xf" type="file" accept=".xlsx" onchange="xlImport(this)"></label>
-<h3>Đồng bộ giữa các máy</h3>
-<div class="mut">${DBC?`Phiên bản trên máy này: ${S.ver||0}. Lần đồng bộ cuối: ${S.syT?dt(S.syT):'chưa có'}. Đẩy lên để lưu bản của máy này, Tải về để lấy bản mới nhất.`:'Đồng bộ trực tuyến chưa được cài đặt trong bản APK này. Hãy dùng xuất/khôi phục Excel để chuyển dữ liệu giữa các máy.'}</div>
-<div class="r2"><button class="btn s" onclick="syPush()"${off}>Đẩy lên</button><button class="btn s" onclick="syPull()"${off}>Tải về</button></div>`)}
-async function xlExport(){if(!window.XLSX)return toast('Chưa tải được thư viện Excel, cần có mạng');if(!DLC)return toast('Máy này chưa cho phép lưu file');
-const tn=id=>(T(id)||{name:''}).name,wb=XLSX.utils.book_new(),add=(n,r)=>XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(r),n),H=[],C=[];
-S.hist.slice().sort((a,b)=>a.d<b.d?-1:1).forEach(h=>{H.push([h.d,h.s,h.xl,h.xm,h.dl,h.dm,h.ban,h.thu.reduce((s,x)=>s+x.a,0),h.chi.reduce((s,x)=>s+x.a,0),h.need,h.real,h.diff,h.lnx,h.lnd,h.kh,h.ll]);[['Thu',h.thu],['Chi',h.chi]].forEach(([k,a])=>a.forEach(x=>C.push([h.d,h.s,k,x.a,x.n])))});
-add('Tồn kho',[['Bồn','Loại','Dung tích (lít)','Tồn kho (lít)','Tỷ lệ %'],...S.tanks.map(t=>[t.name,fn(t.fuel),t.cap,t.v,t.v==null?null:Math.round(pct(t)*1000)/10])]);
-add('Nhập hàng',[['Ngày giờ','Bồn','Số lít nhập','Giá cost (đồng/lít)','Tổng cost (đồng)','Tồn sau nhập (lít)'],...S.imp.map(x=>[dt(x.t),tn(x.k),x.l,x.c||0,x.l*(x.c||0),x.a])]);
-add('Giao ca trụ',[['Ngày giờ','Ca','Trụ','Nhiên liệu','Số điện tử','Số cơ','Số lít bán','Đơn giá (đồng)','Thành tiền (đồng)'],...S.rec.map(x=>[dt(x.t),x.s,x.p+1,fn(x.f),x.e,x.c,x.l,x.pr,x.m])]);
-add('Lịch sử ca',[['Ngày','Ca','Lít xăng','Tiền xăng','Lít dầu','Tiền dầu','Tổng tiền bán lẻ','Tổng thu','Tổng chi','Cần có','Thực tế đếm','Dư/Thiếu','LN xăng','LN dầu','Lãi bán hàng khác','Lãi/Lỗ'],...H]);
-add('Thu chi',[['Ngày','Ca','Loại','Số tiền','Ghi chú'],...C]);add('Đơn giá trụ',[['Ngày giờ','Trụ','Giá cũ (đồng/lít)','Giá mới (đồng/lít)'],...(S.ph||[]).map(x=>[dt(x.t),x.p+1,x.o,x.pr])]);
-const js=JSON.stringify(S),ch=[];for(let i=0;i<js.length;i+=30000)ch.push([js.slice(i,i+30000)]);add('_DuLieu',[['Không sửa sheet này, dùng để khôi phục'],...ch]);
-try{await DLC.save({filename:`kho-xang-dau-${tdy()}.xlsx`,data:XLSX.write(wb,{type:'array',bookType:'xlsx'})});toast('Đã xuất file Excel')}catch(e){if(!e||e.code!='declined')toast('Không lưu được file')}}
-async function xlImport(el){const f=el.files[0];if(!f)return;if(!window.XLSX)return toast('Chưa tải được thư viện Excel');
-try{const wb=XLSX.read(await f.arrayBuffer(),{type:'array'}),ws=wb.Sheets['_DuLieu'];if(!ws)throw 0;
-const d=JSON.parse(XLSX.utils.sheet_to_json(ws,{header:1}).slice(1).map(r=>r[0]||'').join(''));if(!d.tanks||!d.pumps||!d.rec)throw 0;
-ask(`Thay toàn bộ dữ liệu trên máy bằng file ${E(f.name)}? Dữ liệu hiện tại sẽ mất.`,()=>{S=d;S.hist=S.hist||[];S.imp=S.imp||[];S.pin=S.pin||'';save();hv=null;render();toast('Đã khôi phục dữ liệu')})}
-catch(e){toast('File không hợp lệ. Hãy chọn file Excel do app này xuất ra.')}}
-async function syPush(){let mv=0;try{const m=await DBC.doc('sync/meta').get();mv=m.exists?m.data().ver||0:0}catch(e){return toast('Không đọc được kho đồng bộ. Kiểm tra mạng và quyền.')}
-const go=async()=>{try{const v=Math.max(mv,S.ver||0)+1;S.ver=v;S.syT=Date.now();const js=JSON.stringify(S),n=Math.ceil(js.length/60000);
-for(let i=0;i<n;i++)await DBC.doc('sync/c'+i).set({s:js.slice(i*60000,(i+1)*60000)});
-await DBC.doc('sync/meta').set({ver:v,n,t:S.syT});save();dataForm();toast('Đã đẩy dữ liệu lên, phiên bản '+v)}catch(e){toast('Đẩy dữ liệu thất bại. Kiểm tra mạng và quyền ghi.')}};
-if(mv>(S.ver||0))ask('Máy khác đã đẩy dữ liệu mới hơn lên kho đồng bộ. Ghi đè bằng dữ liệu của máy này?',go);else go()}
-async function syPull(){try{const m=await DBC.doc('sync/meta').get();if(!m.exists)return toast('Chưa có dữ liệu trên kho đồng bộ');
-const{ver,n}=m.data();let js='';for(let i=0;i<n;i++)js+=(await DBC.doc('sync/c'+i).get()).data().s;const d=JSON.parse(js);
-ask(`Tải dữ liệu phiên bản ${ver} về và thay thế dữ liệu trên máy này?`,()=>{S=d;S.ver=ver;S.syT=Date.now();S.hist=S.hist||[];S.imp=S.imp||[];S.pin=S.pin||'';save();hv=null;render();dataForm();toast('Đã tải dữ liệu về')})}
-catch(e){toast('Tải dữ liệu thất bại. Kiểm tra mạng và quyền đọc.')}}
+let syncState='Chưa cấu hình đồng bộ',syncTimer=null;
+window.addEventListener('sync-status',e=>{syncState=e.detail||'Đồng bộ';});
+window.applyRemoteState=function(remote,updatedAt){
+  if(!remote||!remote.tanks||!remote.pumps||!remote.rec)return;
+  const localStamp=S._syncStamp||0;
+  if(updatedAt&&updatedAt<=localStamp)return;
+  S=remote;S.hist=S.hist||[];S.imp=S.imp||[];S.ph=S.ph||[];S.pin=S.pin||'';
+  S._syncStamp=updatedAt||Date.now();
+  try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}
+  hv=null;render();toast('Đã nhận dữ liệu mới từ máy khác');
+};
+function save(){
+  try{localStorage.setItem(K,JSON.stringify(S))}catch(e){toast('Bộ nhớ đầy. Hãy xuất Excel sao lưu');return}
+  if(window.anhHuySync&&anhHuySync.isReady()){
+    clearTimeout(syncTimer);
+    syncTimer=setTimeout(async()=>{try{await anhHuySync.push(S);syncState='Đã đồng bộ';}catch(e){syncState='Lỗi đồng bộ: '+e.message;toast(syncState)}},900);
+  }
+}
+function dataForm(){
+ const c=anhHuySync.config(),configured=!!(c.apiKey&&c.projectId);
+ sh(`<h2>Dữ liệu & đồng bộ</h2>
+ <div class="mut">Dữ liệu được lưu trên điện thoại trước. Khi đăng nhập Firebase, thay đổi sẽ tự đồng bộ đến các máy còn lại theo thời gian thực.</div>
+ <button class="btn" onclick="xlExport()">Xuất file Excel</button>
+ <label>Khôi phục từ file Excel do app xuất ra<input id="xf" type="file" accept=".xlsx" onchange="xlImport(this)"></label>
+ <h3>Đồng bộ 2–3 thiết bị (Firebase)</h3>
+ <div class="mut">Trạng thái: ${E(syncState)}. Cần cấu hình một Firebase project và bật Email/Password Authentication + Firestore. Dùng cùng tài khoản nội bộ trên các máy.</div>
+ <label>Firebase Web config (JSON)<textarea id="fbc" rows="5" placeholder='{"apiKey":"...","authDomain":"...","projectId":"...","appId":"..."}'>${E(configured?JSON.stringify(c,null,2):'')}</textarea></label>
+ <label>Email tài khoản đồng bộ<input id="fbe" type="email" autocomplete="username" placeholder="anhhuy@example.com"></label>
+ <label>Mật khẩu<input id="fbp" type="password" autocomplete="current-password" placeholder="Mật khẩu Firebase"></label>
+ <button class="btn" onclick="firebaseConnect()">Kết nối / đăng nhập</button>
+ <div class="r2"><button class="btn s" onclick="firebasePush()">Đẩy bản hiện tại</button><button class="btn s" onclick="firebasePull()">Tải bản mới nhất</button></div>
+ <button class="btn s bad" onclick="firebaseDisconnect()">Ngắt kết nối</button>
+ <div class="mut">Dữ liệu trên máy vẫn dùng được khi offline. Khi online và đăng nhập, app nhận bản mới tự động. Hãy chỉ chia sẻ tài khoản này cho 2–3 nhân viên được phép dùng.</div>`)
+}
+async function firebaseConnect(){
+ try{
+  const c=JSON.parse($('#fbc').value),e=$('#fbe').value.trim(),p=$('#fbp').value;
+  if(!c.apiKey||!c.projectId||!e||!p)throw new Error('Thiếu Firebase config, email hoặc mật khẩu');
+  anhHuySync.saveConfig(c);await anhHuySync.connect(c,e,p);syncState='Đã kết nối';dataForm();toast('Đã kết nối đồng bộ thời gian thực');
+  const remote=await anhHuySync.pull();if(remote&&!S.ver){ask('Đã có dữ liệu trên Firebase. Tải dữ liệu đó về thay thế dữ liệu hiện tại?',()=>window.applyRemoteState(remote,Date.now()))}
+  else await anhHuySync.push(S);
+ }catch(e){syncState='Chưa kết nối';toast('Kết nối Firebase thất bại: '+e.message)}
+}
+async function firebasePush(){try{if(!anhHuySync.isReady())throw new Error('Hãy đăng nhập trước');await anhHuySync.push(S);toast('Đã đẩy dữ liệu lên Firebase')}catch(e){toast(e.message)}}
+async function firebasePull(){try{const d=await anhHuySync.pull();if(!d)return toast('Firebase chưa có dữ liệu');ask('Tải dữ liệu mới nhất và thay thế dữ liệu trên máy này?',()=>window.applyRemoteState(d,Date.now()))}catch(e){toast(e.message)}}
+async function firebaseDisconnect(){try{await anhHuySync.disconnect();syncState='Đã ngắt kết nối';dataForm();toast('Đã ngắt kết nối')}catch(e){toast(e.message)}}
 const tcost=id=>S.imp.filter(x=>x.k==id).reduce((s,x)=>s+x.l*(x.c||0),0),dn=i=>S.rec.some(r=>r.p==i&&(r.gd||ds(new Date(r.t)))==tdy()),
 dsp=n=>`<b class="${lc(n)}">${n<0?'Thiếu ':'Dư '}${fmt(Math.abs(n))} đồng</b>`;
 function wave(y,c,k,o){return`<path class="wv${k}" style="fill:${c};opacity:${o}" d="M-60 ${y} q15 -5 30 0${' t30 0'.repeat(7)} V280 H-60Z"/>`}
