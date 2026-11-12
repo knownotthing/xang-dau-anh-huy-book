@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0E5A57">
+<title>Kho &amp; Bán lẻ xăng dầu</title>
+<script src="xlsx.full.min.js"></script>
+<script src="native.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Be+Vietnam+Pro:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#EDF0EE;--card:#fff;--ink:#16231F;--mut:#5E6D68;--line:#D3DAD6;--pri:#0E5A57;--onpri:#fff;--xang:#E39B0B;--dau:#4C7A34;--bad:#C8352B;--fd:'Barlow Condensed','Arial Narrow',sans-serif;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0E1614;--card:#16221F;--ink:#E7EFEB;--mut:#9DB0A9;--line:#2A3B37;--pri:#4FC4B9;--onpri:#06201D;--xang:#F2B33D;--dau:#8FC063;--bad:#FF7468;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0E1614;--card:#16221F;--ink:#E7EFEB;--mut:#9DB0A9;--line:#2A3B37;--pri:#4FC4B9;--onpri:#06201D;--xang:#F2B33D;--dau:#8FC063;--bad:#FF7468;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 'Be Vietnam Pro',system-ui,sans-serif;padding-bottom:84px}
+main{padding:0 12px;max-width:640px;margin:0 auto}
+h1,h2,h3{margin:0}h1{font:700 30px var(--fd)}h2{font:700 26px var(--fd)}h3{font-size:15px;margin-top:6px}
+.num{font-family:var(--fd);font-weight:700}.big{font-size:28px;line-height:1}.xl{font-size:48px;line-height:1}
+.mut{color:var(--mut);font-size:13px}.bad{color:var(--bad)}.c{text-align:center}
+.row{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;padding:14px 2px 10px}
+.btn{border:0;border-radius:10px;padding:12px 16px;font:inherit;font-weight:700;background:var(--pri);color:var(--onpri)}
+.btn.s{background:transparent;color:var(--pri);border:1.5px solid var(--pri)}.btn.s.bad{color:var(--bad);border-color:var(--bad)}
+.btn.d{background:var(--bad);color:#fff}.btn.sm{padding:7px 12px;font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.tk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 6px;display:grid;justify-items:center;gap:3px;font:inherit;color:inherit;text-align:center}
+.al{border-color:var(--bad);animation:pu 1.4s infinite}
+@keyframes pu{50%{box-shadow:0 0 0 5px color-mix(in srgb,var(--bad) 30%,transparent)}}
+@media(prefers-reduced-motion:reduce){.al{animation:none}}
+.warn{background:color-mix(in srgb,var(--bad) 13%,transparent);border:1px solid var(--bad);color:var(--bad);border-radius:10px;padding:10px 12px;margin:0 0 10px;font-weight:500}
+.pumps{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:4px 0 14px}
+.pump{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 4px 8px;display:grid;justify-items:center;gap:2px;color:var(--ink);font:inherit}
+.pump svg{width:100%;max-width:56px}.pno{font-size:36px;line-height:1}
+.sum{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:2px 14px;margin-bottom:12px}
+.li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.li:last-child{border-bottom:0}.rt{text-align:right}.tot b{font:700 24px var(--fd)}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);z-index:10}
+nav button{flex:1;border:0;background:none;color:var(--mut);padding:8px 0 7px;display:grid;justify-items:center;gap:2px;font:inherit;font-size:12px;position:relative}
+nav .on{color:var(--pri);font-weight:700}
+#nb{position:absolute;top:4px;left:calc(50% + 8px);background:var(--bad);color:#fff;border-radius:9px;min-width:17px;height:17px;font:700 11px/17px var(--fd);font-style:normal}
+#sheet{position:fixed;inset:0;z-index:20}
+.bk{position:absolute;inset:0;background:rgba(0,0,0,.5)}
+.pl{position:absolute;left:0;right:0;bottom:0;max-height:92%;overflow:auto;background:var(--card);border-radius:18px 18px 0 0;padding:10px 16px calc(18px + env(safe-area-inset-bottom,0px));display:grid;gap:10px;max-width:640px;margin:0 auto}
+.hd{display:flex;justify-content:flex-end}.x{border:0;background:var(--bg);color:var(--ink);width:34px;height:34px;border-radius:17px;font-size:16px}
+label,.lb{display:grid;gap:4px;font-size:13px;color:var(--mut)}
+input,select,textarea{font:inherit;font-size:16px;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);width:100%}
+.chips{display:flex;gap:8px}.chip{flex:1;padding:10px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-weight:700}
+.chip.on{background:var(--pri);color:var(--onpri);border-color:var(--pri)}
+.gen{border:1px dashed var(--line);border-radius:12px;padding:10px;display:grid;gap:8px}
+.bt{display:grid;justify-items:center}.lk{border:0;background:none;color:var(--bad);font:inherit;font-size:12px;padding:2px 0}
+#to{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(90px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:30;max-width:90%;text-align:center}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+.lai{color:#12803A}@media(prefers-color-scheme:dark){.lai{color:#4ADE80}}
+.li input{width:auto;flex:1;min-width:0}.sum label{padding:8px 0}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.wd{text-align:center;font-size:12px;color:var(--mut)}
+.cd{min-height:58px;border:1px solid var(--line);border-radius:8px;background:var(--card);padding:4px 1px;font:inherit;color:var(--ink);display:grid;align-content:space-between;justify-items:center;gap:2px}
+.cd small{font:700 11px var(--fd)}.cd.td{background:color-mix(in srgb,var(--pri) 14%,var(--card))}.cd.sel{border:2px solid var(--pri)}.cd.e{visibility:hidden}
+:root{--xg:#2E9E4F;--dg:#17368A}@media(prefers-color-scheme:dark){:root{--xg:#3DBE6A;--dg:#3A66DA}}
+.wv{animation:wv 3.2s linear infinite}.wv2{animation:wv 4.8s linear infinite reverse}@keyframes wv{to{transform:translateX(-60px)}}
+@media(prefers-reduced-motion:reduce){.wv,.wv2{animation:none}}
+.hh{align-items:start;gap:12px}.hh .li{display:block;font-size:13px}.gs{font-size:11px;font-weight:700;line-height:1.2}
+.cp .sum{margin-bottom:8px}.cp .li{padding:6px 0}.sum{overflow-x:auto}
+.tb{width:100%;border-collapse:collapse;font-size:13px}.tb th{font-weight:500;color:var(--mut);text-align:right;padding:6px 3px}.tb td{text-align:right;padding:7px 3px;border-top:1px solid var(--line);font:700 15px var(--fd)}.tb th:first-child,.tb td:first-child{text-align:left;font:500 14px 'Be Vietnam Pro',system-ui,sans-serif}
+</style></head><body>
+<main id="v"></main>
+<nav>
+<button data-t="tk" onclick="go('tk')"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 6v12a7 2.5 0 0 0 14 0V6"/><ellipse cx="12" cy="6" rx="7" ry="2.5"/><path d="M5 12.5a7 2.5 0 0 0 14 0"/></svg><span>Tồn kho</span><i id="nb" hidden></i></button>
+<button data-t="bl" onclick="go('bl')"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="10" height="18" rx="2"/><rect x="6.5" y="5.5" width="5" height="4"/><path d="M14 8h2a2 2 0 0 1 2 2v6a1.5 1.5 0 0 0 3 0V9l-2.5-3M3 21h12"/></svg><span>Bán lẻ</span></button>
+<button data-t="tc" onclick="go('tc')"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4z"/><path d="M4 7l11-3v3M16 13.5h4"/></svg><span>Thu/Chi</span></button>
+<button data-t="ls" onclick="go('ls')"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><span>Lịch sử</span></button>
+</nav>
+<div id="sheet" hidden></div><div id="to" hidden></div>
+<script>
+const $=s=>document.querySelector(s),K='kho_xd_v2',
+fmt=n=>Math.round(n||0).toLocaleString('en-US'),f1=n=>(Math.round((n||0)*10)/10).toLocaleString('en-US'),n1=n=>n==null?'—':f1(n),
+E=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])),
+dt=t=>new Date(t).toLocaleString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}),
+col=f=>f=='x'?'var(--xg)':'var(--dg)',fn=f=>f=='x'?'Xăng':'Dầu',
+T=id=>S.tanks.find(t=>t.id==id),B=id=>S.barems.find(b=>b.id==id),
+pct=t=>t.cap?Math.min((t.v||0)/t.cap,1):0,low=t=>t.v!=null&&pct(t)<.1;
+let S,tab='tk';
+function cyl(r,L,h){h=Math.min(Math.max(h,0),2*r);if(h<=0)return 0;return(r*r*Math.acos((r-h)/r)-(r-h)*Math.sqrt(Math.max(2*r*h-h*h,0)))*L/1000}
+function gen(D,L){const a=[];for(let h=0;h<D;h+=10)a.push(h);a.push(D);return a.map(h=>[h,Math.round(cyl(D/2,L,h))])}
+function volOf(b,h){const t=b.rows;if(h<=t[0][0])return t[0][0]?t[0][1]*h/t[0][0]:t[0][1];for(let i=1;i<t.length;i++)if(h<=t[i][0]){const[a,x]=t[i-1],[c,y]=t[i];return x+(y-x)*(h-a)/(c-a)}return t[t.length-1][1]}
+function seed(){const b={id:1,name:'Bồn trụ nằm ngang Ø200 × 318 cm',rows:gen(200,318)},
+mk=(id,name,fuel)=>({id,name,fuel,cap:10000,bid:1,h:null,v:10000,log:[]});
+return{tanks:[mk(1,'Bồn 1 (Xăng E10 III)','x'),mk(2,'Bồn 2 (Dầu D.O 0,05%s II)','d')],barems:[b],pumps:[{n:'Dầu 0.05%s II',f:'d',tank:2},{n:'Xăng E10 III',f:'x',tank:1},{n:'Xăng E10 III',f:'x',tank:1},{n:'Dầu 0.05%s II',f:'d',tank:2}],rec:[],imp:[],shift:1}}
+try{S=JSON.parse(localStorage.getItem(K))}catch(e){}if(!S)S=seed();S.hist=S.hist||[];S.pin=S.pin||'';
+function save(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}}
+function toast(m){const e=$('#to');e.textContent=m;e.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>e.hidden=true,2400)}
+function sh(h){$('#sheet').innerHTML=`<div class="bk" onclick="cl()"></div><div class="pl"><div class="hd"><button class="x" onclick="cl()" aria-label="Đóng">✕</button></div>${h}</div>`;$('#sheet').hidden=false}
+function cl(){$('#sheet').hidden=true;$('#sheet').innerHTML=''}
+function ask(m,f){sh(`<p>${m}</p><div class="r2"><button class="btn s" onclick="cl()">Huỷ</button><button class="btn d" id="ok">Đồng ý</button></div>`);$('#ok').onclick=()=>{cl();f()}}
+function fuP(e){e.parentNode.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c==e))}
+function go(t){tab=t;render();scrollTo(0,0)}
+
+function tank(p,c,w){const i='k'+Math.random().toString(36).slice(2,7),Y=30,H=220,Bt=Y+H,y=Bt-H*Math.min(p,1),d='M15 30v220a40 12 0 0 0 80 0v-220a40 12 0 0 0-80 0z';
+let t='';[.1,.25,.5,.75].forEach(q=>{const k=Bt-H*q,s=q==.1?'var(--bad)':'var(--mut)';t+=`<path d="M95 ${k}h7" style="stroke:${s};stroke-width:1.5"/><text x="104" y="${k+3}" style="font:11px var(--fd);fill:${s}">${Math.round(q*100)}</text>`});
+return`<svg viewBox="0 0 135 280" width="${w}" role="img" aria-label="Mức tồn ${Math.round(p*100)}%"><defs><clipPath id="${i}"><path d="${d}"/></clipPath><linearGradient id="${i}g" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".3" stop-color="#fff" stop-opacity=".06"/><stop offset=".85" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".2"/></linearGradient></defs><g clip-path="url(#${i})">${p>0?`<rect x="0" y="${y}" width="135" height="270" style="fill:${c};opacity:.78"/><ellipse cx="55" cy="${y}" rx="40" ry="12" style="fill:${c}"/><ellipse cx="55" cy="${y}" rx="40" ry="12" fill="#fff" opacity=".22"/>${wave(y,c,'',.55)}${wave(y+3,c,'2',.4)}`:''}<rect width="135" height="280" fill="url(#${i}g)"/></g><path d="${d}" fill="none" style="stroke:var(--ink);stroke-opacity:.6;stroke-width:2.5"/><ellipse cx="55" cy="30" rx="40" ry="12" fill="none" style="stroke:var(--ink);stroke-opacity:.6;stroke-width:2"/>${t}</svg>`}
+const pump=(c,pr)=>`<svg viewBox="0 0 64 84"><rect x="6" y="4" width="36" height="72" rx="5" style="fill:${c}"/><rect x="11" y="10" width="26" height="16" rx="2" fill="#10201c"/><text x="24" y="19" text-anchor="middle" style="font:700 8.5px var(--fd);fill:#7ff0c0">${pr||'—'}</text><text x="24" y="24.3" text-anchor="middle" style="font:5px var(--fd);fill:#7ff0c0">đ/lít</text><rect x="11" y="32" width="26" height="20" rx="2" fill="#fff" opacity=".3"/><rect x="2" y="76" width="44" height="6" rx="2" fill="#10201c"/><path d="M42 30h8q6 0 6 6v24" fill="none" stroke="#10201c" stroke-width="3.5" stroke-linecap="round"/><rect x="51" y="58" width="9" height="14" rx="2" fill="#10201c"/></svg>`;
+
+function render(){const L=S.tanks.filter(low);$('#nb').hidden=!L.length;$('#nb').textContent=L.length;
+$('#v').innerHTML=tab=='tk'?vTank():tab=='bl'?vPump():tab=='tc'?vThu():vHist();
+document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t==tab))}
+
+function vTank(){const L=S.tanks.filter(low);
+return`<div class="row"><h1>Tồn kho</h1><div><button class="btn s sm" onclick="bmList()">Barem</button> <button class="btn sm" onclick="impForm()">Nhập hàng</button> <button class="btn sm" onclick="tkForm()">+ Thêm bồn</button></div></div>`+
+(L.length?`<div class="warn">Cảnh báo: ${L.map(t=>E(t.name)).join(', ')} còn dưới 10%. Cần nhập hàng.</div>`:'')+
+(S.tanks.length?`<div class="grid">${S.tanks.map(t=>`<button class="tk${low(t)?' al':''}" onclick="tkOpen(${t.id})">${tank(pct(t),low(t)?'var(--bad)':col(t.fuel),96)}<b>${E(t.name)}</b><span class="num big"${low(t)?' style="color:var(--bad)"':''}>${t.v==null?'Chưa đo':f1(pct(t)*100)+'%'}</span><span class="mut">${fmt(t.v)} / ${fmt(t.cap)} lít</span><span class="mut">Giá cost TB: ${fmt(avgCost(t.id))} đ/lít</span>${low(t)?'<span class="bad"><b>Sắp hết hàng</b></span>':''}</button>`).join('')}</div>`:'<p class="mut">Chưa có bồn nào. Nhấn “Thêm bồn” để bắt đầu.</p>')}
+
+/*function tkOpen(id){const t=T(id);if(!t)return;const b=B(t.bid);
+sh(`<h2>${E(t.name)}</h2><div class="bt">${tank(pct(t),low(t)?'var(--bad)':col(t.fuel),210)}</div>
+<div class="c"><div class="num xl"${low(t)?' style="color:var(--bad)"':''}>${t.h==null?'Chưa đo':f1(pct(t)*100)+'%'}</div><div>${fmt(t.v)} / ${fmt(t.cap)} lít${t.h!=null?`, mực ${t.h} cm`:''}</div>${low(t)?'<div class="bad"><b>Tồn kho dưới 10%. Cần nhập hàng.</b></div>':''}</div>
+<label>Chiều cao mực chất lỏng (cm)<input id="h" type="number" inputmode="decimal" min="0" step="0.1" oninput="pv(${id})"></label>
+<div id="pvw" class="mut">${b?'Barem: '+E(b.name):'Bồn chưa có barem. Nhấn Sửa bồn để chọn barem.'}</div>
+<button class="btn" onclick="tkSave(${id})">Lưu số đo</button>
+<div class="r2"><button class="btn s" onclick="tkForm(${id})">Sửa bồn</button><button class="btn s bad" onclick="tkDel(${id})">Xoá bồn</button></div>
+${t.log.length?'<h3>Lịch sử đo</h3>'+t.log.slice(0,6).map(x=>`<div class="li"><span>${dt(x.t)}</span><span>${x.h} cm → ${fmt(x.v)} lít</span></div>`).join(''):''}`)}
+function pv(id){const t=T(id),b=B(t.bid),h=parseFloat($('#h').value);if(!b||isNaN(h))return;const v=volOf(b,h);
+$('#pvw').innerHTML=`Tồn kho: <b>${fmt(v)} lít</b> (${f1(v/t.cap*100)}%)`+(h>b.rows[b.rows.length-1][0]?'<br><span class="bad">Vượt chiều cao cuối bảng barem</span>':'')}
+function tkSave(id){const t=T(id),b=B(t.bid),h=parseFloat($('#h').value);
+if(!b)return toast('Bồn chưa có barem. Nhấn Sửa bồn để chọn.');
+if(!(h>=0))return toast('Nhập chiều cao mực (cm)');
+t.h=h;t.v=volOf(b,h);t.log.unshift({t:Date.now(),h,v:t.v});t.log.length=Math.min(t.log.length,20);
+save();render();tkOpen(id);toast(low(t)?'Cảnh báo: tồn kho dưới 10%':'Đã lưu số đo')}*/
+function tkOpen(id){const t=T(id);if(!t)return;const b=B(t.bid),im=S.imp.filter(x=>x.k==id).sort((a,c)=>c.t-a.t).slice(0,5);
+sh(`<h2>${E(t.name)}</h2><div class="bt">${tank(pct(t),low(t)?'var(--bad)':col(t.fuel),210)}</div>
+<div class="c"><div class="num xl"${low(t)?' style="color:var(--bad)"':''}>${t.v==null?'Chưa đo':f1(pct(t)*100)+'%'}</div><div>${fmt(t.v)} / ${fmt(t.cap)} lít${t.h!=null?`, đo gần nhất ${t.h} cm`:''}</div><div class="mut">Giá cost trung bình: ${fmt(avgCost(t.id))} đồng/lít. Tổng giá cost đã nhập: ${fmt(tcost(t.id))} đồng</div>${low(t)?'<div class="bad"><b>Tồn kho dưới 10%. Cần nhập hàng.</b></div>':''}</div>
+<button class="btn" onclick="impForm(${id})">Nhập hàng vào bồn</button>
+<button class="btn s" onclick="adjForm(${id})">Chỉnh tồn kho thực tế (cần PIN)</button>
+<button class="btn s" onclick="cbForm(${id})">Đặt giá cost trung bình</button>
+<label>Chiều cao mực chất lỏng (cm)<input id="h" type="number" inputmode="decimal" min="0" step="0.1" oninput="pv(${id})"></label>
+<div id="pvw" class="mut">${b?'Barem: '+E(b.name):'Bồn chưa có barem. Nhấn Sửa bồn để chọn barem.'}</div>
+<button class="btn s" onclick="tkSave(${id})">Lưu số đo</button>
+<div class="r2"><button class="btn s" onclick="tkForm(${id})">Sửa bồn</button><button class="btn s bad" onclick="tkDel(${id})">Xoá bồn</button></div>
+<div class="r2 hh"><div><h3>Lịch sử nhập hàng</h3>${im.length?im.map(x=>`<div class="li"><b>${dt(x.t)}</b><br>+${fmt(x.l)} lít${x.c?`, cost ${fmt(x.c)} đ/lít`:''}<br><span class="mut">Tồn sau: ${fmt(x.a)} lít</span></div>`).join(''):'<p class="mut">Chưa có</p>'}</div>
+<div><h3>Lịch sử đo</h3>${t.log.length?t.log.slice(0,5).map(x=>`<div class="li"><span>${dt(x.t)}</span><span>${x.h==null?'Chỉnh thực tế':x.h+' cm'} → ${fmt(x.v)} lít</span></div>`).join(''):'<p class="mut">Chưa có</p>'}</div></div>`)}
+function pv(id){const t=T(id),b=B(t.bid),h=parseFloat($('#h').value);if(!b||isNaN(h))return;const v=volOf(b,h),d=v-(t.v||0);
+$('#pvw').innerHTML=`Theo barem: <b>${fmt(v)} lít</b> (${f1(v/t.cap*100)}%). Chênh so với sổ sách: ${d>0?'+':''}${fmt(d)} lít. Lưu số đo sẽ cập nhật tồn kho theo số này.`+(h>b.rows[b.rows.length-1][0]?'<br><span class="bad">Vượt chiều cao cuối bảng barem</span>':'')}
+function tkSave(id){const t=T(id),b=B(t.bid),h=parseFloat($('#h').value);
+if(!b)return toast('Bồn chưa có barem. Nhấn Sửa bồn để chọn.');
+if(!(h>=0))return toast('Nhập chiều cao mực (cm)');
+t.h=h;t.v=volOf(b,h);t.log.unshift({t:Date.now(),h,v:t.v});t.log.length=Math.min(t.log.length,20);
+save();render();tkOpen(id);toast(low(t)?'Cảnh báo: tồn kho dưới 10%':'Đã lưu số đo')}
+const nowL=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,16);
+function impForm(id){if(!S.tanks.length)return toast('Chưa có bồn');
+sh(`<h2>Nhập hàng vào bồn</h2>
+<label>Bồn<select id="ik">${S.tanks.map(t=>`<option value="${t.id}"${t.id==id?' selected':''}>${E(t.name)}</option>`).join('')}</select></label>
+<label>Số lít nhập vào bồn<input id="il" inputmode="decimal" oninput="ni(this)"></label>
+<label>Giá cost (đồng/lít, sau trừ vận chuyển)<input id="ic" inputmode="decimal" oninput="ni(this)"></label>
+<label>Ngày giờ nhập<input id="it" type="datetime-local" value="${nowL()}"></label>
+<button class="btn" onclick="impOk()">Lưu nhập hàng</button>`)}
+function impOk(){const t=T($('#ik').value),l=N($('#il').value),d=new Date($('#it').value).getTime();
+if(!(l>0))return toast('Nhập số lít nhập vào bồn');if(isNaN(d))return toast('Chọn ngày giờ nhập');
+const a=(t.v||0)+l;if(a>t.cap)return toast(`Vượt dung tích bồn (${fmt(t.cap)} lít). Kiểm tra lại số lít.`);
+t.v=a;S.imp.push({id:Date.now(),k:t.id,l,t:d,a,c:N($('#ic').value)||0});save();render();tkOpen(t.id);toast(`Đã nhập ${fmt(l)} lít, tồn kho ${fmt(a)} lít`)}
+function tkForm(id){const t=id?T(id):{name:'',fuel:'x',cap:'',bid:S.barems[0]&&S.barems[0].id};
+sh(`<h2>${id?'Sửa bồn':'Thêm bồn mới'}</h2>
+<label>Tên bồn<input id="n" value="${E(t.name)}" placeholder="Bồn 4 (Xăng A95)"></label>
+<div class="chips" id="fu">${['x','d'].map(f=>`<button class="chip${t.fuel==f?' on':''}" data-f="${f}" onclick="fuP(this)">${fn(f)}</button>`).join('')}</div>
+<label>Dung tích (lít)<input id="c" inputmode="numeric" value="${t.cap===''?'':fc(t.cap)}" oninput="ni(this)"></label>
+<label>Barem bồn<select id="b"><option value="">Chưa chọn</option>${S.barems.map(b=>`<option value="${b.id}"${b.id==t.bid?' selected':''}>${E(b.name)}</option>`).join('')}</select></label>
+<button class="btn" onclick="tkOk(${id||0})">Lưu bồn</button>`)}
+function tkOk(id){const n=$('#n').value.trim(),c=N($('#c').value),f=$('#fu .on').dataset.f,bid=+$('#b').value||null;
+if(!n||!(c>0))return toast('Nhập tên bồn và dung tích (lít)');
+let t=id?T(id):null;
+if(t){Object.assign(t,{name:n,cap:c,fuel:f,bid})}
+else{t={id:Date.now(),name:n,cap:c,fuel:f,bid,h:null,v:null,log:[]};S.tanks.push(t)}
+S.pumps.forEach(p=>{if(p.tank==t.id)p.f=f});save();render();tkOpen(t.id)}
+function tkDel(id){const t=T(id);if(S.pumps.some(p=>p.tank==id))return toast('Bồn đang liên kết với trụ bơm. Hãy đổi liên kết ở trụ trước.');ask(`Xoá ${E(t.name)}? Dữ liệu tồn kho của bồn sẽ mất.`,()=>{S.tanks=S.tanks.filter(x=>x.id!=id);save();render();toast('Đã xoá bồn')})}
+
+function bmList(){sh('<h2>Chuẩn barem bồn</h2>'+(S.barems.map(b=>`<div class="li"><span><b>${E(b.name)}</b><br><span class="mut">${b.rows.length} mốc, tối đa ${fmt(b.rows[b.rows.length-1][1])} lít</span></span><span><button class="btn s sm" onclick="bmForm(${b.id})">Sửa</button> <button class="btn s sm bad" onclick="bmDel(${b.id})">Xoá</button></span></div>`).join('')||'<p class="mut">Chưa có barem.</p>')+'<button class="btn" onclick="bmForm()">+ Thêm barem</button>')}
+function bmForm(id){const b=id?B(id):{name:'',rows:[]};
+sh(`<h2>${id?'Sửa barem':'Thêm barem'}</h2>
+<label>Tên barem<input id="bn" value="${E(b.name)}" placeholder="Bồn 1 (Ø160 × 250)"></label>
+<div class="gen"><b>Tạo nhanh cho bồn trụ nằm ngang</b><div class="r2"><label>Đường kính (cm)<input id="bd" type="number" inputmode="decimal"></label><label>Chiều dài (cm)<input id="bl" type="number" inputmode="decimal"></label></div><button class="btn s sm" onclick="bmGen()">Tạo bảng từ kích thước</button></div>
+<label>Bảng barem: mỗi dòng gồm chiều cao (cm), dung tích (lít). Số thập phân dùng dấu chấm, không dùng dấu phân cách hàng nghìn.<textarea id="bt" rows="9" placeholder="10, 171&#10;20, 450">${b.rows.map(r=>r.join(', ')).join('\n')}</textarea></label>
+<button class="btn" onclick="bmOk(${id||0})">Lưu barem</button>`)}
+function bmGen(){const D=parseFloat($('#bd').value),L=parseFloat($('#bl').value);if(!(D>0&&L>0))return toast('Nhập đường kính và chiều dài (cm)');
+$('#bt').value=gen(D,L).map(r=>r.join(', ')).join('\n');if(!$('#bn').value)$('#bn').value=`Trụ nằm ngang Ø${D} × ${L} cm`}
+function bmOk(id){const n=$('#bn').value.trim(),m=new Map();
+$('#bt').value.split('\n').forEach(l=>{const v=l.split(/[\s,;]+/).filter(Boolean).map(Number).slice(0,2);if(v.length==2&&v.every(isFinite))m.set(v[0],v[1])});
+const rows=[...m].sort((a,b)=>a[0]-b[0]);
+if(!n||rows.length<2)return toast('Nhập tên và ít nhất 2 dòng (cm, lít)');
+if(id){const b=B(id);b.name=n;b.rows=rows}else S.barems.push({id:Date.now(),name:n,rows});
+save();render();bmList();toast('Đã lưu barem')}
+function bmDel(id){if(S.tanks.some(t=>t.bid==id))return toast('Barem đang được bồn sử dụng, hãy đổi barem của bồn trước');
+ask('Xoá barem này?',()=>{S.barems=S.barems.filter(b=>b.id!=id);save();bmList()})}
+
+/*function vPump(){const r=S.rec.filter(x=>x.s==S.shift),sm=f=>r.filter(x=>x.f==f).reduce((a,x)=>[a[0]+x.l,a[1]+x.m],[0,0]),X=sm('x'),D=sm('d');
+return`<div class="row"><h1>Bán lẻ</h1><span class="mut">Ca số ${S.shift}</span></div>
+<div class="pumps">${S.pumps.map((p,i)=>`<button class="pump" onclick="pmOpen(${i})" aria-label="Trụ ${i+1}">${pump(col(p.f))}<span class="num pno">${i+1}</span><span class="mut">${fn(p.f)}</span></button>`).join('')}</div>
+<div class="sum">
+<div class="li"><span>Tổng Xăng</span><span class="rt"><b>${f1(X[0])}</b> lít<br>${fmt(X[1])} đồng</span></div>
+<div class="li"><span>Tổng Dầu</span><span class="rt"><b>${f1(D[0])}</b> lít<br>${fmt(D[1])} đồng</span></div>
+<div class="li tot"><span>Tổng số lít trong ca</span><b>${f1(X[0]+D[0])} lít</b></div>
+<div class="li tot"><span>Tổng số tiền trong ca</span><b>${fmt(X[1]+D[1])} đồng</b></div></div>
+<div class="r2"><button class="btn" onclick="gcForm()">Giao ca</button><button class="btn s" onclick="chot()">Chốt sổ ca</button></div>`}
+function chot(){ask(`Chốt sổ ca số ${S.shift} và mở ca mới? Tổng hợp ca mới sẽ bắt đầu từ 0, lịch sử từng trụ vẫn được giữ.`,()=>{S.shift++;save();render();toast('Đã mở ca số '+S.shift)})}
+function pmOpen(i){const r=S.rec.filter(x=>x.p==i).sort((a,b)=>b.t-a.t);
+sh(`<h2>Trụ ${i+1} (${fn(S.pumps[i].f)})</h2><button class="btn" onclick="gcForm(${i})">Giao ca trụ ${i+1}</button><h3>Lịch sử bán hàng</h3>`+
+(r.length?r.map(x=>`<div class="li"><span>${dt(x.t)}<br><span class="mut">Ca ${x.s}, ${fn(x.f)}, ${fmt(x.pr)} đ/lít<br>Điện tử ${f1(x.e)}, cơ ${n1(x.c)}</span></span><span class="rt"><b>${f1(x.l)} lít</b><br>${fmt(x.m)} đồng<br><button class="lk" onclick="recDel(${x.id},${i})">Xoá</button></span></div>`).join(''):'<p class="mut">Trụ này chưa có lần giao ca nào.</p>'))}
+function recDel(id,i){ask('Xoá lần giao ca này?',()=>{S.rec=S.rec.filter(x=>x.id!=id);save();render();pmOpen(i)})}
+
+function gcForm(i=0){const p=S.pumps[i];
+sh(`<h2>Giao ca</h2>
+<div class="lb">Trụ bơm</div><div class="chips" id="gp">${[0,1,2,3].map(k=>`<button class="chip${k==i?' on':''}" data-f="${k}" onclick="fuP(this);gcPick()">${k+1}</button>`).join('')}</div>
+<div class="lb">Loại nhiên liệu</div><div class="chips" id="gf">${['x','d'].map(f=>`<button class="chip${p.f==f?' on':''}" data-f="${f}" onclick="fuP(this);gcFu()">${fn(f)}</button>`).join('')}</div>
+<label>Tổng ca (số lít điện tử)<input id="ge" type="number" inputmode="decimal" oninput="gcUpd()"></label>
+<label>Tổng ca (số lít cơ)<input id="gc" type="number" inputmode="decimal" oninput="gcUpd()"></label>
+<label>Số lít bán trong ca<input id="gl" type="number" inputmode="decimal" oninput="this.dataset.m=1;gcUpd()"></label>
+<label>Đơn giá (đồng)<input id="gpr" type="number" inputmode="numeric" oninput="gcUpd()"></label>
+<div id="gi" class="mut"></div>
+<div class="li tot"><span>Thành tiền</span><b id="gm">0 đồng</b></div>
+<button class="btn" onclick="gcOk()">Lưu giao ca</button>`);gcPick()}
+function gcPick(){const p=+$('#gp .on').dataset.f;fuP($(`#gf [data-f="${S.pumps[p].f}"]`));$('#gl').dataset.m='';gcFu()}
+function gcFu(){const f=$('#gf .on').dataset.f;$('#gpr').value=S.price[f]||'';gcUpd()}
+function gcUpd(){const p=+$('#gp .on').dataset.f,pr=S.rec.filter(x=>x.p==p).sort((a,b)=>b.t-a.t)[0],e=parseFloat($('#ge').value),c=parseFloat($('#gc').value),L=$('#gl');
+if(pr&&!L.dataset.m&&!isNaN(e))L.value=Math.round((e-pr.e)*100)/100;
+const l=parseFloat(L.value)||0,g=parseFloat($('#gpr').value)||0;
+$('#gm').textContent=fmt(l*g)+' đồng';
+$('#gi').textContent=pr?`Kỳ trước: điện tử ${f1(pr.e)}, cơ ${n1(pr.c)}.`+(!isNaN(e)&&!isNaN(c)&&pr.c!=null?` Chênh lệch điện tử và cơ: ${f1(Math.abs((e-pr.e)-(c-pr.c)))} lít.`:''):'Chưa có số kỳ trước. Hãy nhập số lít bán trong ca.'}
+function gcOk(){const p=+$('#gp .on').dataset.f,f=$('#gf .on').dataset.f,e=parseFloat($('#ge').value),c=parseFloat($('#gc').value),l=parseFloat($('#gl').value),pr=parseFloat($('#gpr').value);
+if(isNaN(e))return toast('Nhập tổng ca (số lít điện tử)');
+if(!(l>=0))return toast('Nhập số lít bán trong ca');
+if(!(pr>0))return toast('Nhập đơn giá (đồng)');
+S.rec.push({id:Date.now(),p,f,e,c:isNaN(c)?null:c,l,pr,m:Math.round(l*pr),t:Date.now(),s:S.shift});
+S.pumps[p].f=f;S.price[f]=pr;save();cl();render();toast(`Đã lưu giao ca trụ ${p+1}`)}*/
+function sumHtml(){const r=S.rec.filter(x=>x.s==S.shift),sm=f=>r.filter(x=>x.f==f).reduce((a,x)=>[a[0]+x.l,a[1]+x.m],[0,0]),X=sm('x'),D=sm('d');
+return`<div class="sum"><div class="li"><span>Tổng tiền Xăng</span><span class="rt">${f1(X[0])} lít<br><b>${fmt(X[1])} đồng</b></span></div>
+<div class="li"><span>Tổng tiền Dầu</span><span class="rt">${f1(D[0])} lít<br><b>${fmt(D[1])} đồng</b></span></div>
+<div class="li"><span>Tổng số lít Xăng</span><b>${f1(X[0])} lít</b></div>
+<div class="li"><span>Tổng số lít Dầu</span><b>${f1(D[0])} lít</b></div>
+<div class="li tot"><span>Tổng số lít trong ca</span><b>${f1(X[0]+D[0])} lít</b></div>
+<div class="li tot"><span>Tổng tiền xăng dầu</span><b>${fmt(X[1]+D[1])} đồng</b></div></div>`}
+function vPump(){return`<div class="row"><h1>Bán lẻ</h1><span class="mut">Ca số ${S.shift}</span></div>
+<div class="pumps">${S.pumps.map((p,i)=>`<button class="pump" onclick="pmOpen(${i})" aria-label="Trụ ${i+1}">${pump(col(p.f),fc(p.pr))}<span class="num pno">${i+1}</span><span class="mut">${fn(p.f)}</span><b style="font:700 14px var(--fd)">${p.pr?fc(p.pr)+' đ/l':'Chưa có giá'}</b><span class="gs ${dn(i)?'lai':'bad'}">${dn(i)?'Hôm nay đã giao ca'+(cnt(i)>1?` (${cnt(i)} lần)`:''):'Hôm nay chưa giao ca'}</span></button>`).join('')}</div>
+${sumHtml()}
+<div class="r2">${S.pumps.map((p,i)=>`<button class="btn" onclick="gcForm(${i})">${gcN(i)}</button>`).join('')}</div>
+<button class="btn s" style="width:100%;margin-top:10px" onclick="chot()">Chốt sổ ca</button>`}
+function chot(){ask(`Chốt sổ ca số ${S.shift} và mở ca mới? Tổng hợp ca mới sẽ bắt đầu từ 0, lịch sử từng trụ vẫn được giữ.`,()=>{S.shift++;save();render();toast('Đã mở ca số '+S.shift)})}
+function pmOpen(i){const p=S.pumps[i],k=T(p.tank),r=S.rec.filter(x=>x.p==i).sort((a,b)=>b.t-a.t);
+sh(`<h2>Trụ ${i+1} (${E(p.n)})</h2><div class="mut">Trừ tồn kho: ${k?E(k.name):'chưa liên kết bồn'}</div>
+<div class="r2"><button class="btn" onclick="gcForm(${i})">Giao ca</button><button class="btn s" onclick="pmCfg(${i})">Cài đặt trụ</button></div>${ph(i)}<h3>Lịch sử bán hàng</h3>`+
+(r.length?r.map(x=>`<div class="li"><span>${dt(x.t)}<br><span class="mut">Ca ${x.s}, ${fn(x.f)}, ${fmt(x.pr)} đ/lít<br>Điện tử ${f1(x.e)}, cơ ${n1(x.c)}</span></span><span class="rt"><b>${f1(x.l)} lít</b><br>${fmt(x.m)} đồng<br><button class="lk" onclick="recDel(${x.id},${i})">Xoá</button></span></div>`).join(''):'<p class="mut">Trụ này chưa có lần giao ca nào.</p>'))}
+function recDel(id,i){ask('Xoá lần giao ca này? Số lít đã trừ sẽ được cộng lại vào bồn.',()=>{const x=S.rec.find(r=>r.id==id),t=x&&T(x.k);if(t&&t.v!=null)t.v+=x.d||0;S.rec=S.rec.filter(r=>r.id!=id);save();render();pmOpen(i)})}
+function pmCfg(i){const p=S.pumps[i];
+sh(`<h2>Cài đặt trụ ${i+1}</h2><label>Tên nhiên liệu của trụ<input id="pn" value="${E(p.n)}"></label>
+<label>Đơn giá (đồng/lít)<input id="ppr" inputmode="numeric" value="${fc(p.pr)}" oninput="ni(this)"></label>
+<label>Bồn bị trừ tồn kho<select id="pt">${S.tanks.map(t=>`<option value="${t.id}"${t.id==p.tank?' selected':''}>${E(t.name)}</option>`).join('')}</select></label>
+<button class="btn" onclick="pmCfgOk(${i})">Lưu cài đặt</button>`)}
+function pmCfgOk(i){const p=S.pumps[i],t=T($('#pt').value);if(!t)return toast('Cần có ít nhất 1 bồn');p.n=$('#pn').value.trim()||p.n;p.tank=t.id;p.f=t.fuel;const np=N($('#ppr').value);const ch=np>0&&p.pr!=np;if(np>0)setPrice(i,np);save();render();const o=S.pumps.map((q,j)=>j).filter(j=>j!=i&&S.pumps[j].f==p.f&&S.pumps[j].pr!=p.pr);if(ch&&o.length)pxAsk(i,o);else pmOpen(i)}
+function gcForm(i){const p=S.pumps[i],t=T(p.tank),d=p.dr||{};
+sh(`<h2>Giao ca trụ ${i+1}${cnt(i)?` (lần ${cnt(i)+1} trong ngày)`:''}</h2><div class="mut">${E(p.n)}. ${t?`Trừ tồn kho ${E(t.name)} (còn ${fmt(t.v)} lít)`:'Chưa liên kết bồn'}</div>
+<label>Ngày giao ca<input id="gd" type="date" value="${tdy()}" max="${tdy()}"></label>
+<label>Tổng ca (số lít điện tử)<input id="ge" inputmode="decimal" value="${d.e??''}" oninput="ni(this);gcUpd(${i})"></label>
+<label>Tổng ca (số lít cơ)<input id="gc" inputmode="decimal" value="${d.c??''}" oninput="ni(this);gcUpd(${i})"></label>
+<label>Số lít bán trong ca<input id="gl" inputmode="decimal" value="${d.l??''}" data-m="${d.m||''}" oninput="this.dataset.m=1;ni(this);gcUpd(${i})"></label>
+<label>Đơn giá (đồng)<input id="gpr" inputmode="numeric" value="${d.pr??fc(p.pr)}" oninput="ni(this);gcUpd(${i})"></label>
+<div id="gi" class="mut"></div><div class="li tot"><span>Thành tiền</span><b id="gm">0 đồng</b></div>
+<button class="btn" onclick="gcOk(${i})">Lưu giao ca</button>`);gcUpd(i,1)}
+function gcUpd(i,init){const p=S.pumps[i],pr=S.rec.filter(x=>x.p==i).sort((a,b)=>b.t-a.t)[0],e=N($('#ge').value),c=N($('#gc').value),L=$('#gl');
+if(pr&&!L.dataset.m&&!isNaN(e))L.value=Math.round((e-pr.e)*100)/100;
+ni(L);const l=N(L.value)||0,g=N($('#gpr').value)||0,t=T(p.tank);
+$('#gm').textContent=fmt(l*g)+' đồng';
+if(!init){p.dr={e:$('#ge').value,c:$('#gc').value,l:L.value,m:L.dataset.m||'',pr:$('#gpr').value};save()}
+$('#gi').innerHTML=(pr?`Kỳ trước: điện tử ${f1(pr.e)}, cơ ${n1(pr.c)}.`+(!isNaN(e)&&!isNaN(c)&&pr.c!=null?` Chênh lệch điện tử và cơ: ${f1(Math.abs((e-pr.e)-(c-pr.c)))} lít.`:''):'Chưa có số kỳ trước. Hãy nhập số lít bán trong ca.')+(t&&t.v!=null&&l>t.v?'<br><span class="bad">Số lít bán lớn hơn tồn kho của bồn.</span>':'')}
+function gcOk(i){const p=S.pumps[i],t=T(p.tank),e=N($('#ge').value),c=N($('#gc').value),l=N($('#gl').value),pr=N($('#gpr').value);
+if(isNaN(e))return toast('Nhập tổng ca (số lít điện tử)');
+if(!(l>=0))return toast('Nhập số lít bán trong ca');
+if(!(pr>0))return toast('Nhập đơn giá (đồng)');
+const now=Date.now(),ok=t&&t.v!=null,b4=ok?t.v:0,dd=ok?Math.min(l,b4):0;if(ok)t.v=b4-dd;
+const r={id:now,p:i,f:p.f,e,c:isNaN(c)?null:c,l,pr,m:Math.round(l*pr),t:now,s:S.shift,k:p.tank,d:dd,gd:$('#gd').value||tdy()};
+S.rec.push(r);setPrice(i,pr);p.dr=null;save();render();gcRes(r,b4,ok)}
+function gcRes(r,b4,ok){const t=T(r.k);
+sh(`<h2>Đã lưu giao ca trụ ${r.p+1}</h2><div class="mut">Ngày giao ca ${r.gd.split('-').reverse().join('/')}, nhập lúc ${dt(r.t)}</div>
+<div class="li"><span>${f1(r.l)} lít × ${fmt(r.pr)} đồng</span><b>${fmt(r.m)} đồng</b></div>
+${ok?`<div class="li"><span>Tồn kho ${E(t.name)}</span><span class="rt">${fmt(b4)} → <b${low(t)?' class="bad"':''}>${fmt(t.v)} lít</b></span></div>`:''}
+${ok&&low(t)?'<div class="warn">Bồn dưới 10%. Cần nhập hàng.</div>':''}
+<h3>Tổng hợp ca số ${S.shift}</h3>${sumHtml()}<button class="btn" onclick="cl()">Đóng</button>`)}
+const N=s=>parseFloat(String(s).replace(/,/g,'')),fc=n=>n===''||n==null?'':Number(n).toLocaleString('en-US',{maximumFractionDigits:2}),
+hp=s=>{let h=5381;for(const c of s)h=(h*33^c.charCodeAt(0))>>>0;return String(h)},
+pad=n=>String(n).padStart(2,'0'),ds=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`,tdy=()=>ds(new Date()),
+ab=n=>{const a=Math.abs(n);return(n<0?'-':'+')+(a>=1e6?+(a/1e6).toFixed(1)+'tr':a>=1e3?Math.round(a/1e3)+'k':a)},
+lc=n=>n<0?'bad':'lai',ls=n=>(n<0?'Lỗ ':'Lãi ')+fmt(Math.abs(n))+' đồng',
+CU=()=>S.cur||(S.cur={thu:[],chi:[],tt:'',ll:'',s:1});
+let hv=null;
+function ni(el){const o=el.value,p=el.selectionStart;let v=o.replace(/[^\d.]/g,'');const i=v.indexOf('.');if(i>=0)v=v.slice(0,i+1)+v.slice(i+1).replace(/\./g,'');
+const q=v.split('.'),a=q[0].replace(/\B(?=(\d{3})+(?!\d))/g,','),nv=q.length>1?a+'.'+q[1]:a;
+let keep=o.slice(0,p).replace(/[^\d.]/g,'').length,c=0;el.value=nv;while(keep>0&&c<nv.length){if(nv[c]!==',')keep--;c++}
+try{el.setSelectionRange(c,c)}catch(e){}}
+function adjForm(id){const t=T(id);
+sh(`<h2>Chỉnh tồn kho thực tế</h2><div class="mut">${E(t.name)}, sổ sách đang có ${fmt(t.v)} lít</div>
+<label>Tồn kho thực tế hiện tại (lít)<input id="av" inputmode="decimal" oninput="ni(this)"></label>
+<label>${S.pin?'Mã PIN (6 số)':'Tạo mã PIN mới (6 số)'}<input id="ap" type="password" inputmode="numeric" maxlength="6" autocomplete="off"></label>
+<button class="btn" onclick="adjOk(${id})">Lưu tồn kho thực tế</button>${S.pin?`<button class="lk" style="color:var(--pri);font-size:14px" onclick="pinForm(${id})">Đổi mã PIN</button>`:''}`)}
+function adjOk(id){const t=T(id),v=N($('#av').value),p=$('#ap').value;
+if(!/^\d{6}$/.test(p))return toast('Mã PIN gồm đúng 6 chữ số');
+if(S.pin&&hp(p)!=S.pin)return toast('Mã PIN không đúng');
+if(!(v>=0))return toast('Nhập số lít tồn kho thực tế');
+if(v>t.cap)return toast(`Vượt dung tích bồn (${fmt(t.cap)} lít)`);
+if(!S.pin)S.pin=hp(p);
+t.log.unshift({t:Date.now(),h:null,v});t.log.length=Math.min(t.log.length,20);t.v=v;save();render();tkOpen(id);toast(`Đã chỉnh tồn kho thực tế: ${fmt(v)} lít`)}
+function pinForm(id){sh(`<h2>Đổi mã PIN</h2><label>PIN hiện tại<input id="po" type="password" inputmode="numeric" maxlength="6"></label><label>PIN mới (6 số)<input id="pw" type="password" inputmode="numeric" maxlength="6"></label><button class="btn" onclick="pinOk(${id})">Đổi PIN</button>`)}
+function pinOk(id){const o=$('#po').value,n=$('#pw').value;if(hp(o)!=S.pin)return toast('PIN hiện tại không đúng');if(!/^\d{6}$/.test(n))return toast('PIN mới gồm đúng 6 chữ số');S.pin=hp(n);save();toast('Đã đổi PIN');adjForm(id)}
+function calc(){const c=CU(),r=S.rec.filter(x=>x.s==S.shift),s=f=>r.filter(x=>x.f==f).reduce((a,x)=>[a[0]+x.l,a[1]+x.m],[0,0]),X=s('x'),D=s('d'),sm=a=>a.reduce((t,x)=>t+x.a,0),
+thu=sm(c.thu),chi=sm(c.chi),ban=X[1]+D[1],need=ban+thu-chi,real=N(c.tt);
+return{c,X,D,thu,chi,ban,need,real,diff:isNaN(real)?null:real-need,ll:(N(c.ll)||0)*c.s}}
+function blk(k,ti){const c=CU(),a=c[k];
+return`<div class="sum"><div class="li"><b>${ti}</b><b class="num big">${fmt(a.reduce((t,x)=>t+x.a,0))} đồng</b></div>`+
+a.map((x,j)=>`<div class="li"><span>${E(x.n)||'Khoản '+(j+1)}</span><span>${fmt(x.a)} đồng <button class="lk" onclick="tcDel('${k}',${x.id})">Xoá</button></span></div>`).join('')+
+`<div class="li"><input id="${k}a" inputmode="decimal" placeholder="Số tiền" oninput="ni(this)"><input id="${k}n" placeholder="Ghi chú"><button class="btn sm" onclick="tcAdd('${k}')">Thêm</button></div></div>`}
+function vThu(){const k=calc(),c=k.c,dc=k.diff==null?'':k.diff>=0?'lai':'bad',dl=k.diff==null?'Dư / Thiếu':k.diff>=0?'Dư':'Thiếu';
+return`<div class="row"><h1>Thu / Chi</h1><span class="mut">Ca số ${S.shift}</span></div>
+<div class="sum"><div class="li tot"><span>Tổng tiền bán lẻ trong ca</span><b>${fmt(k.ban)} đồng</b></div></div>
+${blk('thu','Thu trong ca')}${blk('chi','Chi trong ca')}
+<div class="sum"><div class="li"><span>Tổng Thu</span><b>${fmt(k.thu)} đồng</b></div><div class="li"><span>Tổng Chi</span><b>${fmt(k.chi)} đồng</b></div>
+<div class="li tot"><span>Tổng tiền cần có trong ca</span><b>${fmt(k.need)} đồng</b></div><div class="mut" style="padding:0 0 8px">Tổng tiền cần có = Tổng tiền bán lẻ ${fmt(k.ban)} + Tổng Thu ${fmt(k.thu)} − Tổng Chi ${fmt(k.chi)} = ${fmt(k.need)} đồng</div>
+<label>Số tiền thực tế đếm được (đồng)<input id="tt" inputmode="numeric" value="${E(c.tt)}" oninput="ni(this);tcSet()"></label>
+<div class="li tot"><span id="dl">${dl}</span><b id="df" class="${dc}">${k.diff==null?'—':fmt(Math.abs(k.diff))+' đồng'}</b></div></div>
+<div class="sum"><div class="lb" style="padding-top:8px">Lãi / Lỗ trong ca (tự nhập)</div><div class="chips"><button class="chip${c.s==1?' on':''}" onclick="tcLL(1)">Lãi</button><button class="chip${c.s==-1?' on':''}" onclick="tcLL(-1)">Lỗ</button></div>
+<label><input id="ll" inputmode="numeric" placeholder="Số tiền (đồng)" value="${E(c.ll)}" oninput="ni(this);tcSet()"></label></div>
+<button class="btn" style="width:100%" onclick="chot()">Chốt sổ và lưu ca</button>`}
+function tcSet(){const c=CU();c.tt=$('#tt').value;c.ll=$('#ll').value;save();const k=calc();
+$('#df').className=k.diff==null?'':k.diff>=0?'lai':'bad';$('#df').textContent=k.diff==null?'—':fmt(Math.abs(k.diff))+' đồng';$('#dl').textContent=k.diff==null?'Dư / Thiếu':k.diff>=0?'Dư':'Thiếu'}
+function tcAdd(k){const a=N($('#'+k+'a').value);if(!(a>0))return toast('Nhập số tiền (đồng)');CU()[k].push({id:Date.now(),a,n:$('#'+k+'n').value.trim()});save();render()}
+function tcDel(k,id){const c=CU();c[k]=c[k].filter(x=>x.id!=id);save();render()}
+function tcLL(s){CU().s=s;save();render()}
+function chot(){const k=calc();
+sh(`<h2>Chốt sổ ca số ${S.shift}</h2><div class="mut">Lưu bán lẻ, thu, chi, tiền đếm được và lãi/lỗ của ca vào lịch sử theo ngày, rồi xoá hết để nhập ca mới. Lịch sử từng trụ vẫn được giữ.</div>
+<div class="li"><span>Tổng tiền bán lẻ</span><b>${fmt(k.ban)} đồng</b></div><div class="li"><span>Lãi / Lỗ ca</span><b class="${lc(k.ll)}">${ls(k.ll)}</b></div>
+<label>Ngày của ca<input id="cd" type="date" value="${tdy()}"></label>
+<div class="r2"><button class="btn s" onclick="cl()">Huỷ</button><button class="btn" onclick="chotOk()">Chốt sổ ca</button></div>`)}
+function chotOk(){const k=calc(),d=$('#cd').value||tdy();
+S.hist.push({id:Date.now(),d,s:S.shift,xl:k.X[0],xm:k.X[1],dl:k.D[0],dm:k.D[1],ban:k.ban,thu:k.c.thu,chi:k.c.chi,need:k.need,real:isNaN(k.real)?null:k.real,diff:k.diff,ll:k.ll});
+S.shift++;S.cur=null;hv=null;save();cl();render();toast(`Đã lưu ca vào lịch sử. Mở ca số ${S.shift}`)}
+function vHist(){const t=tdy();if(!hv)hv={y:+t.slice(0,4),m:+t.slice(5,7)-1,sel:t};
+const{y,m,sel}=hv,off=(new Date(y,m,1).getDay()+6)%7,dim=new Date(y,m+1,0).getDate(),by={};
+S.hist.forEach(h=>{const o=by[h.d]||(by[h.d]={l:0});o.l+=h.ll||0});
+let cs='';for(let i=0;i<off;i++)cs+='<div class="cd e"></div>';
+for(let d=1;d<=dim;d++){const k=`${y}-${pad(m+1)}-${pad(d)}`,o=by[k];cs+=`<button class="cd${k==t?' td':''}${k==sel?' sel':''}" onclick="hsPick('${k}')"><span>${d}</span>${o?`<small class="${lc(o.l)}">${ab(o.l)}</small>`:'<small></small>'}</button>`}
+const sd=new Date(sel+'T00:00:00'),w0=new Date(sd);w0.setDate(sd.getDate()-(sd.getDay()+6)%7);const w1=new Date(w0);w1.setDate(w0.getDate()+6);
+const W=ds(w0),W1=ds(w1),Y=+sel.slice(0,4),M=+sel.slice(5,7),Q=Math.ceil(M/3),sm=f=>S.hist.filter(f).reduce((a,h)=>a+(h.ll||0),0),
+rows=[[`Tuần ${pad(w0.getDate())}/${pad(w0.getMonth()+1)} đến ${pad(w1.getDate())}/${pad(w1.getMonth()+1)}`,sm(h=>h.d>=W&&h.d<=W1)],[`Tháng ${M}/${Y}`,sm(h=>+h.d.slice(0,4)==Y&&+h.d.slice(5,7)==M)],[`Quý ${Q}/${Y}`,sm(h=>+h.d.slice(0,4)==Y&&Math.ceil(+h.d.slice(5,7)/3)==Q)],[`Năm ${Y}`,sm(h=>+h.d.slice(0,4)==Y)]];
+return`<div class="row"><h1>Lịch sử</h1><div><button class="btn s sm" onclick="hsNav(-1)" aria-label="Tháng trước">‹</button> <b>Tháng ${m+1}/${y}</b> <button class="btn s sm" onclick="hsNav(1)" aria-label="Tháng sau">›</button></div></div>
+<div class="cal">${['T2','T3','T4','T5','T6','T7','CN'].map(x=>`<div class="wd">${x}</div>`).join('')}${cs}</div>
+<h3 style="margin:14px 0 6px">Tổng kết quanh ngày ${sel.split('-').reverse().join('/')}</h3>
+${sumTable(sel)}
+
+
+<div class="mut">Trong ô lịch: k là nghìn đồng, tr là triệu đồng. Nhấn vào ngày để xem chi tiết ca.</div>
+<button class="btn" style="width:100%;margin-top:12px" onclick="dataForm()">Dữ liệu: xuất Excel, sao lưu, đồng bộ</button>`}
+function hsNav(n){let m=hv.m+n,y=hv.y;if(m<0){m=11;y--}if(m>11){m=0;y++}hv.y=y;hv.m=m;const t=tdy();hv.sel=t.startsWith(`${y}-${pad(m+1)}`)?t:`${y}-${pad(m+1)}-01`;render()}
+function hsPick(k){hv.sel=k;render();if(S.hist.some(h=>h.d==k))hsDay(k)}
+function hsDay(k){const L=S.hist.filter(h=>h.d==k),
+lst=(a,t)=>a.length?`<div class="li"><span>${t}: ${fmt(a.reduce((s,x)=>s+x.a,0))}</span><span class="rt">${a.map(x=>fmt(x.a)+(x.n?' ('+E(x.n)+')':'')).join('<br>')}</span></div>`:'';
+sh(`<h2>${k.split('-').reverse().join('/')}</h2><div class="li tot"><span>Tổng Dư/Thiếu trong ngày</span>${dsp(L.reduce((a,h)=>a+(h.diff||0),0))}</div><div class="li"><span>Tổng lít xăng / dầu trong ngày</span><b>${f1(L.reduce((a,h)=>a+h.xl,0))} / ${f1(L.reduce((a,h)=>a+h.dl,0))}</b></div>`+L.map(h=>`<div class="sum"><div class="li"><b>Ca số ${h.s}</b><b class="${lc(h.ll||0)}">${ls(h.ll||0)}</b></div>
+<div class="li"><span>Xăng</span><span class="rt">${f1(h.xl)} lít<br>${fmt(h.xm)} đồng</span></div>
+<div class="li"><span>Dầu</span><span class="rt">${f1(h.dl)} lít<br>${fmt(h.dm)} đồng</span></div>
+<div class="li"><span>Tổng tiền bán lẻ</span><b>${fmt(h.ban)} đồng</b></div>${h.lnt==null?'':`<div class="li"><span>Lợi nhuận xăng / dầu</span><span class="rt">${fmt(h.lnx)} / ${fmt(h.lnd)}</span></div><div class="li"><span>Lãi bán hàng khác</span><b>${fmt(h.kh)} đồng</b></div>`}${lst(h.thu,'Thu')}${lst(h.chi,'Chi')}
+<div class="li"><span>Số tiền cần có</span><b>${fmt(h.need)} đồng</b></div>
+<div class="li"><span>Thực tế đếm được</span><b>${h.real==null?'—':fmt(h.real)+' đồng'}</b></div>
+<div class="li"><span>${h.diff==null?'Dư / Thiếu':h.diff>=0?'Dư':'Thiếu'}</span><b class="${h.diff==null?'':lc(h.diff)}">${h.diff==null?'—':fmt(Math.abs(h.diff))+' đồng'}</b></div>
+<button class="lk" onclick="hsDel(${h.id})">Xoá ca này</button></div>`).join(''))}
+function hsDel(id){ask('Xoá ca này khỏi lịch sử?',()=>{S.hist=S.hist.filter(h=>h.id!=id);save();render()})}
+let DBC=null,DLC=window.nativeDL||null;
+try{navigator.storage.persist().catch(()=>{})}catch(e){}
+if(window.claude){claude.use('db').then(d=>{DBC=d}).catch(()=>{});claude.use('downloads').then(d=>{DLC=d}).catch(()=>{})}
+function dataForm(){const off=DBC?'':' disabled style="opacity:.45"';
+sh(`<h2>Dữ liệu</h2><div class="mut">Dữ liệu được lưu ngay trên máy này. Hãy xuất Excel định kỳ để sao lưu.</div>
+<button class="btn" onclick="xlExport()">Xuất file Excel</button>
+<label>Khôi phục từ file Excel do app xuất ra (thay thế toàn bộ dữ liệu trên máy)<input id="xf" type="file" accept=".xlsx" onchange="xlImport(this)"></label>
+<h3>Đồng bộ giữa các máy</h3>
+<div class="mut">${DBC?`Phiên bản trên máy này: ${S.ver||0}. Lần đồng bộ cuối: ${S.syT?dt(S.syT):'chưa có'}. Đẩy lên để lưu bản của máy này, Tải về để lấy bản mới nhất.`:'Đồng bộ trực tuyến chưa được cài đặt trong bản APK này. Hãy dùng xuất/khôi phục Excel để chuyển dữ liệu giữa các máy.'}</div>
+<div class="r2"><button class="btn s" onclick="syPush()"${off}>Đẩy lên</button><button class="btn s" onclick="syPull()"${off}>Tải về</button></div>`)}
+async function xlExport(){if(!window.XLSX)return toast('Chưa tải được thư viện Excel, cần có mạng');if(!DLC)return toast('Máy này chưa cho phép lưu file');
+const tn=id=>(T(id)||{name:''}).name,wb=XLSX.utils.book_new(),add=(n,r)=>XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(r),n),H=[],C=[];
+S.hist.slice().sort((a,b)=>a.d<b.d?-1:1).forEach(h=>{H.push([h.d,h.s,h.xl,h.xm,h.dl,h.dm,h.ban,h.thu.reduce((s,x)=>s+x.a,0),h.chi.reduce((s,x)=>s+x.a,0),h.need,h.real,h.diff,h.lnx,h.lnd,h.kh,h.ll]);[['Thu',h.thu],['Chi',h.chi]].forEach(([k,a])=>a.forEach(x=>C.push([h.d,h.s,k,x.a,x.n])))});
+add('Tồn kho',[['Bồn','Loại','Dung tích (lít)','Tồn kho (lít)','Tỷ lệ %'],...S.tanks.map(t=>[t.name,fn(t.fuel),t.cap,t.v,t.v==null?null:Math.round(pct(t)*1000)/10])]);
+add('Nhập hàng',[['Ngày giờ','Bồn','Số lít nhập','Giá cost (đồng/lít)','Tổng cost (đồng)','Tồn sau nhập (lít)'],...S.imp.map(x=>[dt(x.t),tn(x.k),x.l,x.c||0,x.l*(x.c||0),x.a])]);
+add('Giao ca trụ',[['Ngày giờ','Ca','Trụ','Nhiên liệu','Số điện tử','Số cơ','Số lít bán','Đơn giá (đồng)','Thành tiền (đồng)'],...S.rec.map(x=>[dt(x.t),x.s,x.p+1,fn(x.f),x.e,x.c,x.l,x.pr,x.m])]);
+add('Lịch sử ca',[['Ngày','Ca','Lít xăng','Tiền xăng','Lít dầu','Tiền dầu','Tổng tiền bán lẻ','Tổng thu','Tổng chi','Cần có','Thực tế đếm','Dư/Thiếu','LN xăng','LN dầu','Lãi bán hàng khác','Lãi/Lỗ'],...H]);
+add('Thu chi',[['Ngày','Ca','Loại','Số tiền','Ghi chú'],...C]);add('Đơn giá trụ',[['Ngày giờ','Trụ','Giá cũ (đồng/lít)','Giá mới (đồng/lít)'],...(S.ph||[]).map(x=>[dt(x.t),x.p+1,x.o,x.pr])]);
+const js=JSON.stringify(S),ch=[];for(let i=0;i<js.length;i+=30000)ch.push([js.slice(i,i+30000)]);add('_DuLieu',[['Không sửa sheet này, dùng để khôi phục'],...ch]);
+try{await DLC.save({filename:`kho-xang-dau-${tdy()}.xlsx`,data:XLSX.write(wb,{type:'array',bookType:'xlsx'})});toast('Đã xuất file Excel')}catch(e){if(!e||e.code!='declined')toast('Không lưu được file')}}
+async function xlImport(el){const f=el.files[0];if(!f)return;if(!window.XLSX)return toast('Chưa tải được thư viện Excel');
+try{const wb=XLSX.read(await f.arrayBuffer(),{type:'array'}),ws=wb.Sheets['_DuLieu'];if(!ws)throw 0;
+const d=JSON.parse(XLSX.utils.sheet_to_json(ws,{header:1}).slice(1).map(r=>r[0]||'').join(''));if(!d.tanks||!d.pumps||!d.rec)throw 0;
+ask(`Thay toàn bộ dữ liệu trên máy bằng file ${E(f.name)}? Dữ liệu hiện tại sẽ mất.`,()=>{S=d;S.hist=S.hist||[];S.imp=S.imp||[];S.pin=S.pin||'';save();hv=null;render();toast('Đã khôi phục dữ liệu')})}
+catch(e){toast('File không hợp lệ. Hãy chọn file Excel do app này xuất ra.')}}
+async function syPush(){let mv=0;try{const m=await DBC.doc('sync/meta').get();mv=m.exists?m.data().ver||0:0}catch(e){return toast('Không đọc được kho đồng bộ. Kiểm tra mạng và quyền.')}
+const go=async()=>{try{const v=Math.max(mv,S.ver||0)+1;S.ver=v;S.syT=Date.now();const js=JSON.stringify(S),n=Math.ceil(js.length/60000);
+for(let i=0;i<n;i++)await DBC.doc('sync/c'+i).set({s:js.slice(i*60000,(i+1)*60000)});
+await DBC.doc('sync/meta').set({ver:v,n,t:S.syT});save();dataForm();toast('Đã đẩy dữ liệu lên, phiên bản '+v)}catch(e){toast('Đẩy dữ liệu thất bại. Kiểm tra mạng và quyền ghi.')}};
+if(mv>(S.ver||0))ask('Máy khác đã đẩy dữ liệu mới hơn lên kho đồng bộ. Ghi đè bằng dữ liệu của máy này?',go);else go()}
+async function syPull(){try{const m=await DBC.doc('sync/meta').get();if(!m.exists)return toast('Chưa có dữ liệu trên kho đồng bộ');
+const{ver,n}=m.data();let js='';for(let i=0;i<n;i++)js+=(await DBC.doc('sync/c'+i).get()).data().s;const d=JSON.parse(js);
+ask(`Tải dữ liệu phiên bản ${ver} về và thay thế dữ liệu trên máy này?`,()=>{S=d;S.ver=ver;S.syT=Date.now();S.hist=S.hist||[];S.imp=S.imp||[];S.pin=S.pin||'';save();hv=null;render();dataForm();toast('Đã tải dữ liệu về')})}
+catch(e){toast('Tải dữ liệu thất bại. Kiểm tra mạng và quyền đọc.')}}
+const tcost=id=>S.imp.filter(x=>x.k==id).reduce((s,x)=>s+x.l*(x.c||0),0),dn=i=>S.rec.some(r=>r.p==i&&(r.gd||ds(new Date(r.t)))==tdy()),
+dsp=n=>`<b class="${lc(n)}">${n<0?'Thiếu ':'Dư '}${fmt(Math.abs(n))} đồng</b>`;
+function wave(y,c,k,o){return`<path class="wv${k}" style="fill:${c};opacity:${o}" d="M-60 ${y} q15 -5 30 0${' t30 0'.repeat(7)} V280 H-60Z"/>`}
+function setPrice(i,pr){const p=S.pumps[i];if(p.pr==pr)return;(S.ph=S.ph||[]).push({id:Date.now(),p:i,o:p.pr||0,pr,t:Date.now()});p.pr=pr;if(p.dr)delete p.dr.pr}
+function ph(i){const p=S.pumps[i],L=(S.ph||[]).filter(x=>x.p==i).sort((a,b)=>b.t-a.t).slice(0,5);
+return`<h3>Đơn giá hiện tại: ${p.pr?fmt(p.pr)+' đồng/lít':'chưa đặt'}</h3>`+L.map(x=>`<div class="li"><span>${dt(x.t)}</span><span>${x.o?fmt(x.o)+' → ':'Đặt giá '}<b>${fmt(x.pr)}</b></span></div>`).join('')}
+function dtRows(sel){const Y=+sel.slice(0,4),M=+sel.slice(5,7),Q=Math.ceil(M/3),sm=f=>S.hist.filter(f).reduce((a,h)=>a+(h.diff||0),0),
+r=[[`Ngày ${sel.split('-').reverse().join('/')}`,sm(h=>h.d==sel)],[`Tháng ${M}/${Y}`,sm(h=>+h.d.slice(0,4)==Y&&+h.d.slice(5,7)==M)],[`Quý ${Q}/${Y}`,sm(h=>+h.d.slice(0,4)==Y&&Math.ceil(+h.d.slice(5,7)/3)==Q)]];
+return r.map(x=>`<div class="li"><span>${x[0]}</span>${dsp(x[1])}</div>`).join('')}
+const avgCost=id=>{const t=T(id),b=t&&t.base;let l=b?b.l:0,s=b?b.l*b.c:0;S.imp.forEach(x=>{if(x.k==id&&x.c>0&&(!b||x.t>=b.t)){l+=x.l;s+=x.l*x.c}});return l?s/l:0};
+function calc(){const c=CU(),z=()=>({l:0,m:0,v:0}),F={x:z(),d:z()};let nc=false;
+S.rec.filter(x=>x.s==S.shift).forEach(x=>{const a=F[x.f]||F.x,g=avgCost(x.k);if(!g)nc=true;a.l+=x.l;a.m+=x.m;a.v+=x.l*g});
+const sm=a=>a.reduce((t,x)=>t+x.a,0),thu=sm(c.thu),chi=sm(c.chi),X=F.x,D=F.d,ban=X.m+D.m,need=ban+thu-chi,real=N(c.tt),lnx=X.m-X.v,lnd=D.m-D.v,ln=lnx+lnd,khac=(N(c.ll)||0)*c.s;
+return{c,X,D,nc,thu,chi,ban,need,real,diff:isNaN(real)?null:real-need,lnx,lnd,ln,khac,ll:ln+khac}}
+function sumHtml(){const k=calc(),row=(n,a)=>`<tr><td>${n}</td><td>${f1(a.l)}</td><td>${fmt(a.m)}</td><td>${fmt(a.v)}</td><td class="${lc(a.m-a.v)}">${fmt(a.m-a.v)}</td></tr>`,
+T2={l:k.X.l+k.D.l,m:k.X.m+k.D.m,v:k.X.v+k.D.v};
+return`<div class="sum"><table class="tb"><tr><th></th><th>Tổng lít</th><th>Tổng tiền</th><th>Giá vốn</th><th>Lợi nhuận</th></tr>${row('Xăng',k.X)}${row('Dầu',k.D)}${row('Tổng',T2)}</table></div>
+<div class="mut">Giá vốn = số lít bán × giá cost trung bình của bồn. Đơn vị tiền: đồng.</div>${k.nc?'<div class="bad">Chưa nhập giá cost cho một bồn nên lợi nhuận chưa chính xác.</div>':''}`}
+const tfx=k=>`= Lợi nhuận xăng dầu ${fmt(k.ln)} + Lãi bán hàng khác ${fmt(k.khac)}`;
+function pxAsk(i,o){const p=S.pumps[i];sh(`<h2>Đồng bộ đơn giá?</h2><p>Đơn giá ${fn(p.f)} mới là <b>${fmt(p.pr)} đồng/lít</b>. Áp dụng luôn cho ${o.map(j=>'Trụ '+(j+1)+' (hiện '+(S.pumps[j].pr?fmt(S.pumps[j].pr):'chưa có giá')+')').join(', ')} không?</p><div class="r2"><button class="btn s" onclick="pmOpen(${i})">Không</button><button class="btn" onclick="pxOk(${i},[${o}])">Đồng bộ</button></div>`)}
+function pxOk(i,o){const pr=S.pumps[i].pr;o.forEach(j=>setPrice(j,pr));save();render();pmOpen(i);toast('Đã đồng bộ đơn giá')}
+let hdet=false;
+function hdt(){hdet=!hdet;render()}
+function sumTable(sel){const Y=+sel.slice(0,4),M=+sel.slice(5,7),Q=Math.ceil(M/3),yy=h=>+h.d.slice(0,4)==Y,mm=h=>yy(h)&&+h.d.slice(5,7)==M,qq=h=>yy(h)&&Math.ceil(+h.d.slice(5,7)/3)==Q,
+sd=new Date(sel+'T00:00:00'),w0=new Date(sd);w0.setDate(sd.getDate()-(sd.getDay()+6)%7);const w1=new Date(w0);w1.setDate(w0.getDate()+6);const W=ds(w0),W1=ds(w1),
+P=[[`Ngày ${sel.split('-').reverse().join('/')}`,h=>h.d==sel],[`Tuần ${pad(w0.getDate())}/${pad(w0.getMonth()+1)} – ${pad(w1.getDate())}/${pad(w1.getMonth()+1)}`,h=>h.d>=W&&h.d<=W1],[`Tháng ${M}/${Y}`,mm]];
+if(hdet)P.push([`Quý ${Q}/${Y}`,qq],[`Năm ${Y}`,yy]);
+const row=([n,f])=>{const L=S.hist.filter(f),s=g=>L.reduce((a,h)=>a+(g(h)||0),0),ll=s(h=>h.ll),df=s(h=>h.diff);return`<tr><td>${n}</td><td class="${lc(ll)}">${fmt(ll)}</td><td class="${lc(df)}">${fmt(df)}</td><td>${f1(s(h=>h.xl))}</td><td>${f1(s(h=>h.dl))}</td></tr>`};
+return`<div class="sum"><table class="tb"><tr><th></th><th>Lãi/Lỗ</th><th>Dư/Thiếu</th><th>Lít xăng</th><th>Lít dầu</th></tr>${P.map(row).join('')}</table></div><button class="btn s sm" onclick="hdt()">${hdet?'Ẩn chi tiết':'Chi tiết'}</button><div class="mut">Lãi/Lỗ và Dư/Thiếu: số dương là lãi hoặc dư, số âm là lỗ hoặc thiếu. Đơn vị tiền: đồng. Quý và năm hiện khi nhấn Chi tiết.</div>`}
+const cnt=i=>S.rec.filter(r=>r.p==i&&(r.gd||ds(new Date(r.t)))==tdy()).length,gcN=i=>cnt(i)?`Giao ca lần ${cnt(i)+1} trụ ${i+1}`:`Giao ca trụ ${i+1}`;
+function pinChk(p){if(!/^\d{6}$/.test(p))return'Mã PIN gồm đúng 6 chữ số';if(S.pin&&hp(p)!=S.pin)return'Mã PIN không đúng';if(!S.pin)S.pin=hp(p);return''}
+function cbForm(id){const t=T(id),a=avgCost(id);
+sh(`<h2>Giá cost trung bình hiện tại</h2><div class="mut">${E(t.name)}. Giá đang tính: ${fmt(a)} đồng/lít. Giá bạn đặt sẽ là giá nền cho tồn kho hiện tại (${fmt(t.v)} lít). Các đợt nhập sau đó được tính trung bình theo số lít.</div>
+<label>Giá cost trung bình (đồng/lít)<input id="cb" inputmode="decimal" value="${a?fc(Math.round(a)):''}" oninput="ni(this)"></label>
+<button class="btn" onclick="cbOk(${id})">Lưu giá cost trung bình</button>`)}
+function cbOk(id){const t=T(id),c=N($('#cb').value);if(!(c>0))return toast('Nhập giá cost (đồng/lít)');t.base={c,l:Math.max(t.v||0,1),t:Date.now()};save();render();tkOpen(id);toast('Đã đặt giá cost trung bình '+fmt(c)+' đồng/lít')}
+function pmOpen(i){const p=S.pumps[i],k=T(p.tank),r=S.rec.filter(x=>x.p==i).sort((a,b)=>b.t-a.t);
+sh(`<h2>Trụ ${i+1} (${E(p.n)})</h2><div class="mut">Trừ tồn kho: ${k?E(k.name):'chưa liên kết bồn'}</div>
+<div class="r2"><button class="btn" onclick="gcForm(${i})">${gcN(i)}</button><button class="btn s" onclick="pmCfg(${i})">Cài đặt trụ</button></div>${ph(i)}<h3>Lịch sử bán hàng</h3>`+
+(r.length?r.map(x=>`<div class="li"><span>${dt(x.t)}${x.ed?' (đã sửa)':''}<br><span class="mut">Ca ${x.s}${x.gd?', ngày '+x.gd.split('-').reverse().join('/'):''}, ${fn(x.f)}, ${fmt(x.pr)} đ/lít<br>Điện tử ${f1(x.e)}, cơ ${n1(x.c)}</span></span><span class="rt"><b>${f1(x.l)} lít</b><br>${fmt(x.m)} đồng<br><button class="lk" style="color:var(--pri)" onclick="rcForm(${x.id},${i})">Sửa</button> <button class="lk" onclick="recDel(${x.id},${i})">Xoá</button></span></div>`).join(''):'<p class="mut">Trụ này chưa có lần giao ca nào.</p>'))}
+function rcForm(id,i){const x=S.rec.find(r=>r.id==id);if(!x)return;
+sh(`<h2>Sửa giao ca trụ ${i+1}</h2><div class="mut">${dt(x.t)}, ca ${x.s}.${x.s!=S.shift?' Ca này đã chốt: sửa tại đây không làm đổi số liệu đã lưu trong Lịch sử.':''} Lưu sẽ ghi đè lên giao ca này và tính lại tồn kho bồn.</div>
+<label>Tổng ca (số lít điện tử)<input id="re" inputmode="decimal" value="${fc(x.e)}" oninput="ni(this)"></label>
+<label>Tổng ca (số lít cơ)<input id="rc" inputmode="decimal" value="${fc(x.c)}" oninput="ni(this)"></label>
+<label>Số lít bán trong ca<input id="rl" inputmode="decimal" value="${fc(x.l)}" oninput="ni(this)"></label>
+<label>Đơn giá (đồng)<input id="rpr" inputmode="numeric" value="${fc(x.pr)}" oninput="ni(this)"></label>
+<label>${S.pin?'Mã PIN (6 số)':'Tạo mã PIN mới (6 số)'}<input id="rp" type="password" inputmode="numeric" maxlength="6" autocomplete="off"></label>
+<div class="r2"><button class="btn s" onclick="pmOpen(${i})">Huỷ</button><button class="btn" onclick="rcOk(${id},${i})">Lưu và ghi đè</button></div>`)}
+function rcOk(id,i){const x=S.rec.find(r=>r.id==id),e=N($('#re').value),c=N($('#rc').value),l=N($('#rl').value),pr=N($('#rpr').value);
+if(isNaN(e))return toast('Nhập tổng ca (số lít điện tử)');if(!(l>=0))return toast('Nhập số lít bán trong ca');if(!(pr>0))return toast('Nhập đơn giá (đồng)');
+const er=pinChk($('#rp').value);if(er)return toast(er);
+const t=T(x.k);let d=0;if(t&&t.v!=null){t.v+=x.d||0;d=Math.min(l,t.v);t.v-=d}
+Object.assign(x,{e,c:isNaN(c)?null:c,l,pr,m:Math.round(l*pr),d,ed:Date.now()});save();render();pmOpen(i);toast('Đã ghi đè giao ca')}
+function vThu(){const k=calc(),c=k.c,dc=k.diff==null?'':k.diff>=0?'lai':'bad',dl=k.diff==null?'Dư / Thiếu':k.diff>=0?'Dư':'Thiếu';
+return`<div class="row"><h1>Thu / Chi</h1><span class="mut">Ca số ${S.shift}</span></div><div class="cp">
+<div class="sum"><div class="li"><span>Tổng tiền bán lẻ</span><b>${fmt(k.ban)} đồng</b></div><div class="li"><span>Tổng lợi nhuận xăng dầu</span><b class="${lc(k.ln)}">${fmt(k.ln)} đồng</b></div></div>
+${blk('thu','Thu trong ca')}${blk('chi','Chi trong ca')}
+<div class="sum"><div class="li tot"><span>Tổng tiền cần có</span><b>${fmt(k.need)} đồng</b></div>
+<div class="mut">= Bán lẻ ${fmt(k.ban)} + Thu ${fmt(k.thu)} − Chi ${fmt(k.chi)}</div>
+<label>Số tiền thực tế đếm được (đồng)<input id="tt" inputmode="numeric" value="${E(c.tt)}" oninput="ni(this);tcSet()"></label>
+<div class="li"><span id="dl">${dl}</span><b id="df" class="${dc}">${k.diff==null?'—':fmt(Math.abs(k.diff))+' đồng'}</b></div></div>
+<div class="sum"><div class="lb" style="padding-top:6px">Lãi bán hàng khác (tự nhập)</div><div class="chips"><button class="chip${c.s==1?' on':''}" onclick="tcLL(1)">Lãi</button><button class="chip${c.s==-1?' on':''}" onclick="tcLL(-1)">Lỗ</button></div>
+<label><input id="ll" inputmode="numeric" placeholder="Số tiền (đồng)" value="${E(c.ll)}" oninput="ni(this);tcSet()"></label></div>
+<div class="sum"><div class="li tot"><span>Tổng lãi / lỗ trong ca</span><b id="tl" class="${lc(k.ll)}">${ls(k.ll)}</b></div><div class="mut" id="tf">${tfx(k)}</div></div></div>
+<button class="btn" style="width:100%" onclick="chot()">Chốt sổ và lưu ca</button>`}
+function tcSet(){const c=CU();c.tt=$('#tt').value;c.ll=$('#ll').value;save();const k=calc();
+$('#df').className=k.diff==null?'':k.diff>=0?'lai':'bad';$('#df').textContent=k.diff==null?'—':fmt(Math.abs(k.diff))+' đồng';$('#dl').textContent=k.diff==null?'Dư / Thiếu':k.diff>=0?'Dư':'Thiếu';
+$('#tl').className=lc(k.ll);$('#tl').textContent=ls(k.ll);$('#tf').textContent=tfx(k)}
+function chot(){const k=calc();
+sh(`<h2>Chốt sổ ca số ${S.shift}</h2><div class="mut">Lưu bán lẻ, thu, chi, tiền đếm được và lãi/lỗ của ca vào lịch sử theo ngày, rồi xoá hết để nhập ca mới. Lịch sử từng trụ vẫn được giữ.</div>
+<div class="li"><span>Lợi nhuận xăng dầu</span><b class="${lc(k.ln)}">${fmt(k.ln)} đồng</b></div><div class="li"><span>Lãi bán hàng khác</span><b>${fmt(k.khac)} đồng</b></div>
+<div class="li tot"><span>Lãi / Lỗ ca</span><b class="${lc(k.ll)}">${ls(k.ll)}</b></div>
+<label>Ngày của ca<input id="cd" type="date" value="${tdy()}"></label>
+<div class="r2"><button class="btn s" onclick="cl()">Huỷ</button><button class="btn" onclick="chotOk()">Chốt sổ ca</button></div>`)}
+function chotOk(){const k=calc(),d=$('#cd').value||tdy();
+S.hist.push({id:Date.now(),d,s:S.shift,xl:k.X.l,xm:k.X.m,dl:k.D.l,dm:k.D.m,vx:k.X.v,vd:k.D.v,ban:k.ban,thu:k.c.thu,chi:k.c.chi,need:k.need,real:isNaN(k.real)?null:k.real,diff:k.diff,lnx:k.lnx,lnd:k.lnd,lnt:k.ln,kh:k.khac,ll:k.ll});
+S.shift++;S.cur=null;hv=null;save();cl();render();toast(`Đã lưu ca vào lịch sử. Mở ca số ${S.shift}`)}
+render();
+</script></body></html>
