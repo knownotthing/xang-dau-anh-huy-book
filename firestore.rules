@@ -1,10 +1,11 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Internal-only shared data. Require Firebase Email/Password sign-in.
-    // Do not enable public read/write access for this collection.
+    // Replace the placeholder with the UID shown in Firebase Authentication > Users.
+    // Use the same internal Firebase account on the 2-3 test devices.
     match /sharedData/{document} {
-      allow read, write: if request.auth != null;
+      allow read, write: if request.auth != null
+        && request.auth.uid == "REPLACE_WITH_INTERNAL_USER_UID";
     }
   }
 }
