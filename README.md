@@ -4,7 +4,7 @@
 
 ## Build APK bằng GitHub Actions
 
-- Mỗi lần push lên `main` hoặc nhánh `fix/**`, workflow **Build APK** tự chạy.
+- Mỗi lần push lên `main`, nhánh `fix/**` hoặc `upgrade-v2`, workflow **Build APK** tự chạy.
 - Có thể chạy thủ công trong tab **Actions → Build APK → Run workflow**.
 - Khi thành công, mở workflow run và tải artifact **anh-huy-kho-xang-dau-apk**. Bên trong là `app-debug.apk`.
 - APK debug dùng để cài nội bộ; không dùng để phát hành Google Play.
