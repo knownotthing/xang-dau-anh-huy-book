@@ -1,7 +1,7 @@
 name: Build APK
 on:
   push:
-    branches: [main, "fix/**"]
+    branches: [main, "fix/**", "upgrade-v2"]
   workflow_dispatch:
 permissions:
   contents: read
