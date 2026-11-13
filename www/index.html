@@ -311,7 +311,7 @@ function pinOk(id){const o=$('#po').value,n=$('#pw').value;if(hp(o)!=S.pin)retur
 function calc(){const c=CU(),r=S.rec.filter(x=>x.s==S.shift),s=f=>r.filter(x=>x.f==f).reduce((a,x)=>[a[0]+x.l,a[1]+x.m],[0,0]),X=s('x'),D=s('d'),sm=a=>a.reduce((t,x)=>t+x.a,0),
 thu=sm(c.thu),chi=sm(c.chi),ban=X[1]+D[1],need=ban+thu-chi,real=N(c.tt);
 return{c,X,D,thu,chi,ban,need,real,diff:isNaN(real)?null:real-need,ll:(N(c.ll)||0)*c.s}}
-const tcA=s=>{const v=parseFloat(String(s).replace(/[^\\d.]/g,''));return isNaN(v)?0:Math.round(v*1000)};
+const tcA=s=>{const v=parseFloat(String(s).replace(/[^\d.]/g,''));return isNaN(v)?0:Math.round(v*1000)};
 function tcPv(k){const a=tcA($('#'+k+'a').value);$('#'+k+'p').textContent=a?'= '+fmt(a)+' đ':'Nhập 50 là 50,000 đ'}
 function tcKey(e,k,f){if(e.key!=='Enter'&&e.keyCode!==13)return;e.preventDefault();if(f==='a')$('#'+k+'n').focus();else tcAdd(k)}
 function tcAdd(k){const a=tcA($('#'+k+'a').value);if(!a){$('#'+k+'a').focus();return toast('Nhập số tiền (nghìn đồng)')}
@@ -333,7 +333,7 @@ ${blk('thu','Thu trong ca')}${blk('chi','Chi trong ca')}
 function tcSet(){CU().tt=$('#tt').value;saveSoon();const k=calc();
 $('#df').className=k.diff==null?'':k.diff>=0?'lai':'bad';$('#df').textContent=k.diff==null?'—':fmt(Math.abs(k.diff))+' đ';$('#dl').textContent=k.diff==null?'Dư / Thiếu':k.diff>=0?'Dư':'Thiếu';
 $('#tl').className=lc(k.ll);$('#tl').textContent=ls(k.ll)}
-function tcAdd(k){const a=N($('#'+k+'a').value);if(!(a>0))return toast('Nhập số tiền (đồng)');CU()[k].push({id:Date.now(),a,n:$('#'+k+'n').value.trim()});save();render()}
+function tcAdd(k){const a=tcA($('#'+k+'a').value);if(!a){$('#'+k+'a').focus();return toast('Nhập số tiền (nghìn đồng)')}CU()[k].push({id:Date.now(),a,n:$('#'+k+'n').value.trim()});save();render();setTimeout(()=>{const e=$('#'+k+'a');if(e)e.focus()},30)}
 function tcDel(k,id){const c=CU();c[k]=c[k].filter(x=>x.id!=id);save();render()}
 function tcLL(s){CU().s=s;save();render()}
 function chot(){const k=calc();
