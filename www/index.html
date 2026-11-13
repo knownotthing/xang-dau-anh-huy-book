@@ -488,20 +488,14 @@ const t=T(x.k);let d=0;if(t&&t.v!=null){t.v+=x.d||0;d=Math.min(l,t.v);t.v-=d}
 Object.assign(x,{e,c:isNaN(c)?null:c,l,pr,m:Math.round(l*pr),d,ed:Date.now()});save();render();pmOpen(i);toast('Đã ghi đè giao ca')}
 function vThu(){const k=calc(),c=k.c,dc=k.diff==null?'':k.diff>=0?'lai':'bad',dl=k.diff==null?'Dư / Thiếu':k.diff>=0?'Dư':'Thiếu';
 return`<div class="row"><h1>Thu / Chi</h1><span class="mut">Ca số ${S.shift}</span></div><div class="cp">
-<div class="sum"><div class="li"><span>Tổng tiền bán lẻ</span><b>${fmt(k.ban)} đồng</b></div><div class="li"><span>Tổng lợi nhuận xăng dầu</span><b class="${lc(k.ln)}">${fmt(k.ln)} đồng</b></div></div>
+<div class="sum"><div class="li"><span>Tổng tiền bán lẻ</span><b>${fmt(k.ban)} đ</b></div><div class="li"><span>Tổng lợi nhuận xăng dầu</span><b class="${lc(k.ln)}">${fmt(k.ln)} đ</b></div></div>
 ${blk('thu','Thu trong ca')}${blk('chi','Chi trong ca')}
-<div class="sum"><div class="li tot"><span>Tổng tiền cần có</span><b>${fmt(k.need)} đồng</b></div>
+<div class="sum"><div class="li tot"><span>Tổng tiền cần có</span><b>${fmt(k.need)} đ</b></div>
 <div class="mut">= Bán lẻ ${fmt(k.ban)} + Thu ${fmt(k.thu)} − Chi ${fmt(k.chi)}</div>
 <label>Số tiền thực tế đếm được (đồng)<input id="tt" inputmode="numeric" value="${E(c.tt)}" oninput="ni(this);tcSet()"></label>
-<div class="li"><span id="dl">${dl}</span><b id="df" class="${dc}">${k.diff==null?'—':fmt(Math.abs(k.diff))+' đồng'}</b></div></div>
-<div class="sum"><div class="lb" style="padding-top:6px">Lãi bán hàng khác (tự nhập)</div><div class="chips"><button class="chip${c.s==1?' on':''}" onclick="tcLL(1)">Lãi</button><button class="chip${c.s==-1?' on':''}" onclick="tcLL(-1)">Lỗ</button></div>
-<label><input id="ll" inputmode="numeric" placeholder="Số tiền (đồng)" value="${E(c.ll)}" oninput="ni(this);tcSet()"></label></div>
-<div class="sum"><div class="li tot"><span>Tổng lãi / lỗ trong ca</span><b id="tl" class="${lc(k.ll)}">${ls(k.ll)}</b></div><div class="mut" id="tf">${tfx(k)}</div></div></div>
-<button class="btn" style="width:100%" onclick="chot()">Chốt sổ và lưu ca</button>`}
-function tcSet(){const c=CU();c.tt=$('#tt').value;c.ll=$('#ll').value;save();const k=calc();
-$('#df').className=k.diff==null?'':k.diff>=0?'lai':'bad';$('#df').textContent=k.diff==null?'—':fmt(Math.abs(k.diff))+' đồng';$('#dl').textContent=k.diff==null?'Dư / Thiếu':k.diff>=0?'Dư':'Thiếu';
-$('#tl').className=lc(k.ll);$('#tl').textContent=ls(k.ll);$('#tf').textContent=tfx(k)}
-function chot(){const k=calc();
+<div class="li"><span id="dl">${dl}</span><b id="df" class="${dc}">${k.diff==null?'—':fmt(Math.abs(k.diff))+' đ'}</b></div></div>
+<div class="sum"><div class="li tot"><span>Tổng lãi / lỗ trong ca</span><b id="tl" class="${lc(k.ll)}">${ls(k.ll)}</b></div><div class="mut">= Tổng lợi nhuận xăng dầu</div></div></div>
+<button class="btn" style="width:100%" onclick="chot()">Chốt sổ và lưu ca</button>`}function chot(){const k=calc();
 sh(`<h2>Chốt sổ ca số ${S.shift}</h2><div class="mut">Lưu bán lẻ, thu, chi, tiền đếm được và lãi/lỗ của ca vào lịch sử theo ngày, rồi xoá hết để nhập ca mới. Lịch sử từng trụ vẫn được giữ.</div>
 <div class="li"><span>Lợi nhuận xăng dầu</span><b class="${lc(k.ln)}">${fmt(k.ln)} đồng</b></div>${KHAC?`<div class="li"><span>Lãi bán hàng khác</span><b>${fmt(k.khac)} đồng</b></div>`:''}
 <div class="li tot"><span>Lãi / Lỗ ca</span><b class="${lc(k.ll)}">${ls(k.ll)}</b></div>
